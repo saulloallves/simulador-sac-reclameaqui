@@ -992,10 +992,10 @@ body {
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     JAVASCRIPT
-══════════════════════════════════════════════ -->
+
+<!-- JAVASCRIPT -->
 <script>
+
 // ─── BANCO DE CASOS SAC & RECLAME AQUI (12 casos) ─────────────────────────
 const CASOS = [
 
@@ -1667,6 +1667,7 @@ const CASOS = [
 
 ]; // fim CASOS
 
+
 // ─── ESTADO ───────────────────────────────────────────────────────────────
 const TOTAL_CASOS = 12;
 let nomeColaborador = '';
@@ -1678,7 +1679,6 @@ let pontosTotais = 0;
 let resultadosPorCaso = [];
 let pontosNoCaso = 0;
 let acertosNoCaso = 0;
-let aguardandoIA = false;
 let respostasEscrita = [];
 
 // ─── INICIAR ──────────────────────────────────────────────────────────────
@@ -1703,7 +1703,10 @@ function carregarCaso() {
   document.getElementById('chat-nome-franqueado').textContent = caso.cliente.nome;
   document.getElementById('chat-cidade').textContent = caso.cliente.origem;
   document.getElementById('chat-mensagens').innerHTML = '';
-  setTimeout(() => { adicionarMensagemFranqueado(caso.fases[0].mensagem); setTimeout(() => carregarFase(), 800); }, 400);
+  setTimeout(() => {
+    adicionarMensagem(caso.fases[0].mensagem, 'franqueado');
+    setTimeout(() => carregarFase(), 800);
+  }, 400);
 }
 
 // ─── CARREGAR FASE ────────────────────────────────────────────────────────
@@ -1717,19 +1720,20 @@ function carregarFase() {
   document.getElementById('btn-proximo').style.display = 'none';
   const lista = document.getElementById('opcoes-lista');
   lista.innerHTML = '';
+
   if (fase.tipo === 'escrita') {
     lista.innerHTML = `
       <div style="margin-bottom:.5rem;">
         <label style="display:block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--texto2);margin-bottom:.5rem;">${fase.campo_label}</label>
         <textarea id="campo-escrita" placeholder="${fase.campo_placeholder}"
-          style="width:100%;min-height:120px;padding:.85rem 1rem;background:var(--escuro3);border:1.5px solid var(--borda);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--texto);resize:vertical;outline:none;line-height:1.55;transition:border-color .2s;"
+          style="width:100%;min-height:130px;padding:.85rem 1rem;background:var(--escuro3);border:1.5px solid var(--borda);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--texto);resize:vertical;outline:none;line-height:1.55;transition:border-color .2s;"
           onfocus="this.style.borderColor='var(--verde-claro)'" onblur="this.style.borderColor='var(--borda)'"></textarea>
       </div>
       <button onclick="avaliarEscrita()" id="btn-avaliar"
-        style="width:100%;padding:.85rem;background:var(--verde);color:white;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;">
+        style="width:100%;padding:.85rem;background:var(--verde);color:white;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;">
         ✦ Avaliar Resposta →
       </button>
-      <div id="ia-status" style="text-align:center;font-size:.78rem;color:var(--texto2);margin-top:.5rem;display:none;">⏳ Analisando sua resposta...</div>`;
+      <div id="ia-status" style="text-align:center;font-size:.78rem;color:var(--texto2);margin-top:.5rem;display:none;">⏳ Analisando...</div>`;
   } else {
     const letras = ['A','B','C','D'];
     fase.opcoes.forEach((op, i) => {
@@ -1750,16 +1754,21 @@ function responderOpcao(idx) {
   opcoes.forEach(b => b.disabled = true);
   const acertou = fase.opcoes[idx].certa;
   opcoes.forEach((btn, i) => {
-    if (fase.opcoes[i].certa) { if (i === idx && acertou) btn.classList.add('certa'); else if (!acertou) btn.classList.add('mostrar-certa'); }
+    if (fase.opcoes[i].certa) {
+      if (i === idx && acertou) btn.classList.add('certa');
+      else if (!acertou) btn.classList.add('mostrar-certa');
+    }
     if (i === idx && !acertou) btn.classList.add('errada');
   });
   registrarResultado(acertou, 10);
   const fb = document.getElementById('feedback-box');
   fb.className = `feedback-box ${acertou ? 'certo' : 'errado'}`;
   fb.style.display = 'block';
-  document.getElementById('feedback-titulo').innerHTML = acertou ? `✓ Correto! <span class="pontos-flash mais">+10 pts</span>` : `✗ Resposta incorreta <span class="pontos-flash zero">+0 pts</span>`;
+  document.getElementById('feedback-titulo').innerHTML = acertou
+    ? `✓ Correto! <span class="pontos-flash mais">+10 pts</span>`
+    : `✗ Resposta incorreta <span class="pontos-flash zero">+0 pts</span>`;
   document.getElementById('feedback-texto').textContent = acertou ? fase.feedback_certo : fase.feedback_errado;
-  setTimeout(() => adicionarMensagemSistema(fase.resposta_sistema), 600);
+  setTimeout(() => adicionarMensagem(fase.resposta_sistema, 'sistema'), 600);
   setTimeout(() => { document.getElementById('btn-proximo').style.display = 'block'; }, 800);
 }
 
@@ -1772,74 +1781,81 @@ function avaliarEscrita() {
   document.getElementById('btn-avaliar').disabled = true;
   document.getElementById('campo-escrita').disabled = true;
   document.getElementById('ia-status').style.display = 'block';
-  document.getElementById('ia-status').textContent = '⏳ Analisando sua resposta...';
   setTimeout(() => {
     const r = resposta.toLowerCase();
     const palavras = resposta.trim().split(/\s+/).length;
     const tamOk = palavras >= 20;
-    const palavrasNegativas = ['não sei','não posso','impossível','não é meu','problema seu','boa sorte','não é comigo'];
-    const temNegativa = palavrasNegativas.some(p => r.includes(p));
+    const proibidas = ['não sei','não posso','não é meu','problema seu','boa sorte'];
+    const temProibida = proibidas.some(p => r.includes(p));
     const chaves = extrairChaves(fase.avaliacao_prompt);
-    const acertos_chaves = chaves.filter(c => r.includes(c.toLowerCase()));
-    const pct_chaves = chaves.length > 0 ? acertos_chaves.length / chaves.length : 0.5;
-    const errosComuns = ['vc','tb','pq','msm','qq','hj','tá bom','ta bom','blz','vlw'];
-    const temGiria = errosComuns.some(p => r.includes(p));
-    const muitosMaiusculos = (resposta.match(/[A-ZÁÉÍÓÚÃÕ]{3,}/g) || []).length > 3;
-    let pts_conteudo = tamOk ? 7 : 4;
-    if (pct_chaves >= 0.5) pts_conteudo = Math.min(10, pts_conteudo + 2);
-    if (pct_chaves >= 0.8) pts_conteudo = 10;
-    if (temNegativa) pts_conteudo = Math.max(2, pts_conteudo - 3);
-    let pts_tom = 8;
-    if (temNegativa) pts_tom -= 3;
-    if (palavras < 15) pts_tom -= 2;
-    let pts_pt = 8;
-    if (temGiria) pts_pt -= 3;
-    if (muitosMaiusculos) pts_pt -= 2;
-    if (!tamOk) pts_pt -= 1;
-    const media = ((pts_conteudo + pts_tom + pts_pt) / 3).toFixed(1);
+    const acertosChaves = chaves.filter(c => r.includes(c.toLowerCase()));
+    const pctChaves = chaves.length > 0 ? acertosChaves.length / chaves.length : 0.5;
+    const girias = ['vc','tb','pq','msm','blz','vlw','hj'];
+    const temGiria = girias.some(p => r.includes(p));
+    const muitosMaius = (resposta.match(/[A-ZÁÉÍÓÚÃÕ]{3,}/g) || []).length > 3;
+
+    let pts_c = tamOk ? 7 : 4;
+    if (pctChaves >= 0.5) pts_c = Math.min(10, pts_c + 2);
+    if (pctChaves >= 0.8) pts_c = 10;
+    if (temProibida) pts_c = Math.max(2, pts_c - 3);
+    let pts_t = 8;
+    if (temProibida) pts_t -= 3;
+    if (palavras < 15) pts_t -= 2;
+    let pts_p = 8;
+    if (temGiria) pts_p -= 3;
+    if (muitosMaius) pts_p -= 2;
+    if (!tamOk) pts_p -= 1;
+
+    const media = ((pts_c + pts_t + pts_p) / 3).toFixed(1);
     const acertou = parseFloat(media) >= 6;
     registrarResultado(acertou, acertou ? 10 : 0);
+
     let feedbacks = [];
-    if (!tamOk) feedbacks.push('Resposta curta demais — em um atendimento real o cliente precisaria de mais orientação.');
-    if (temNegativa) feedbacks.push('Evite respostas que deixam o cliente sem saída clara.');
-    if (temGiria) feedbacks.push('Atenção ao tom: evite abreviações e linguagem informal no atendimento profissional.');
-    if (pct_chaves >= 0.5 && !feedbacks.length) feedbacks.push('Boa resposta! Contém os pontos essenciais esperados para esta situação.');
-    if (!feedbacks.length) feedbacks.push('Resposta dentro do esperado para o protocolo desta situação.');
+    if (!tamOk) feedbacks.push('Resposta curta — desenvolva mais o raciocínio.');
+    if (temProibida) feedbacks.push('Evite respostas que deixam o franqueado sem saída.');
+    if (temGiria) feedbacks.push('Atenção ao tom profissional — evite abreviações.');
+    if (pctChaves >= 0.5 && !feedbacks.length) feedbacks.push('Boa resposta! Contém os pontos essenciais esperados.');
+    if (!feedbacks.length) feedbacks.push('Resposta dentro do esperado para esta situação.');
+
     respostasEscrita.push({ caso: casoAtual+1, fase: faseAtual+1, texto: resposta, nota: media, aprovado: acertou });
+
     const fb = document.getElementById('feedback-box');
     fb.className = `feedback-box ${acertou ? 'certo' : 'errado'}`;
     fb.style.display = 'block';
-    document.getElementById('feedback-titulo').innerHTML = acertou ? `✓ Aprovado! <span class="pontos-flash mais">+10 pts</span>` : `✗ Precisa melhorar <span class="pontos-flash zero">+0 pts</span>`;
+    document.getElementById('feedback-titulo').innerHTML = acertou
+      ? `✓ Aprovado! <span class="pontos-flash mais">+10 pts</span>`
+      : `✗ Precisa melhorar <span class="pontos-flash zero">+0 pts</span>`;
     document.getElementById('feedback-texto').innerHTML = `
       <div style="display:flex;gap:.5rem;margin-bottom:.6rem;flex-wrap:wrap;">
-        <span style="background:rgba(255,255,255,.08);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;">Conteúdo: ${pts_conteudo}/10</span>
-        <span style="background:rgba(255,255,255,.08);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;">Tom: ${pts_tom}/10</span>
-        <span style="background:rgba(255,255,255,.08);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;">Português: ${pts_pt}/10</span>
+        <span style="background:rgba(255,255,255,.08);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;">Conteúdo: ${pts_c}/10</span>
+        <span style="background:rgba(255,255,255,.08);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;">Tom: ${pts_t}/10</span>
+        <span style="background:rgba(255,255,255,.08);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;">Português: ${pts_p}/10</span>
         <span style="background:rgba(255,255,255,.08);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;font-weight:700;">Média: ${media}/10</span>
       </div>
       <div style="font-size:.83rem;">${feedbacks.join(' ')}</div>
-      <div style="font-size:.75rem;color:var(--texto2);margin-top:.4rem;">📋 Resposta salva para revisão do gestor.</div>`;
+      <div style="font-size:.75rem;color:var(--texto2);margin-top:.4rem;">📋 Salvo para revisão do gestor.</div>`;
     document.getElementById('ia-status').style.display = 'none';
-    setTimeout(() => adicionarMensagemSistema(fase.resposta_sistema), 600);
+    setTimeout(() => adicionarMensagem(fase.resposta_sistema, 'sistema'), 600);
     setTimeout(() => { document.getElementById('btn-proximo').style.display = 'block'; }, 800);
   }, 800);
 }
 
 function extrairChaves(prompt) {
-  const chaves = [];
   const buscar = [
     'escalar','supervisor','coordenador','jurídico','registr','documentar','print',
     'intermediar','acionar','briefing','ticket','protocolo','crise','nível',
     'neutro','condicional','culpa','apurar','empatia','imprensa','procon',
     'advogado','acusar recebimento','prazo','preservar','evidências'
   ];
-  buscar.forEach(c => { if (prompt.toLowerCase().includes(c)) chaves.push(c); });
+  const chaves = [];
+  buscar.forEach(c => { if (prompt.toLowerCase().includes(c) && !chaves.includes(c)) chaves.push(c); });
   return chaves.slice(0, 6);
 }
 
 // ─── REGISTRAR RESULTADO ──────────────────────────────────────────────────
 function registrarResultado(acertou, pontos) {
-  if (acertou) { acertosTotais++; acertosNoCaso++; pontosTotais += pontos; pontosNoCaso += pontos; } else { errosTotais++; }
+  if (acertou) { acertosTotais++; acertosNoCaso++; pontosTotais += pontos; pontosNoCaso += pontos; }
+  else { errosTotais++; }
   document.getElementById('placar-acertos').textContent = acertosTotais;
   document.getElementById('placar-erros').textContent = errosTotais;
   document.getElementById('placar-pontos').textContent = pontosTotais;
@@ -1853,42 +1869,48 @@ function proximaFase() {
     resultadosPorCaso.push({ nome: caso.cliente.nome, origem: caso.cliente.origem, acertos: acertosNoCaso, pontos: pontosNoCaso });
     casoAtual++;
     if (casoAtual >= CASOS.length) { mostrarResultado(); }
-    else { document.getElementById('btn-proximo').style.display = 'none'; document.getElementById('feedback-box').style.display = 'none'; setTimeout(carregarCaso, 300); }
+    else {
+      document.getElementById('btn-proximo').style.display = 'none';
+      document.getElementById('feedback-box').style.display = 'none';
+      setTimeout(carregarCaso, 300);
+    }
     return;
   }
   document.getElementById('btn-proximo').style.display = 'none';
   document.getElementById('feedback-box').style.display = 'none';
-  setTimeout(() => { adicionarMensagemFranqueado(caso.fases[faseAtual].mensagem); setTimeout(() => carregarFase(), 600); }, 300);
+  setTimeout(() => {
+    adicionarMensagem(caso.fases[faseAtual].mensagem, 'franqueado');
+    setTimeout(() => carregarFase(), 600);
+  }, 300);
 }
 
 // ─── CHAT HELPERS ─────────────────────────────────────────────────────────
-function adicionarMensagemFranqueado(texto) {
+function adicionarMensagem(texto, tipo) {
   const caso = CASOS[casoAtual];
   const chat = document.getElementById('chat-mensagens');
-  const el = document.createElement('div');
-  el.className = 'msg franqueado';
-  el.innerHTML = `<div class="msg-avatar">${caso.cliente.avatar}</div><div><div class="msg-balao">${texto}</div><div class="msg-hora">${horaAtual()}</div></div>`;
-  chat.appendChild(el);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function adicionarMensagemSistema(texto) {
-  const chat = document.getElementById('chat-mensagens');
-  const digitando = document.createElement('div');
-  digitando.className = 'msg sistema'; digitando.id = 'digitando';
-  digitando.innerHTML = `<div class="msg-avatar" style="background:var(--verde);">S</div><div class="msg-balao"><div class="digitando"><span></span><span></span><span></span></div></div>`;
-  chat.appendChild(digitando); chat.scrollTop = chat.scrollHeight;
-  setTimeout(() => {
-    const d = document.getElementById('digitando'); if (d) d.remove();
-    const el = document.createElement('div'); el.className = 'msg sistema';
-    el.innerHTML = `<div class="msg-avatar" style="background:var(--verde);">S</div><div><div class="msg-balao">${texto}</div><div class="msg-hora" style="text-align:right">${horaAtual()}</div></div>`;
-    chat.appendChild(el); chat.scrollTop = chat.scrollHeight;
-  }, 1200);
+  if (tipo === 'franqueado') {
+    const el = document.createElement('div');
+    el.className = 'msg franqueado';
+    el.innerHTML = `<div class="msg-avatar">${caso.cliente.avatar}</div><div><div class="msg-balao">${texto}</div><div class="msg-hora">${horaAtual()}</div></div>`;
+    chat.appendChild(el);
+    chat.scrollTop = chat.scrollHeight;
+  } else {
+    const digit = document.createElement('div');
+    digit.className = 'msg sistema'; digit.id = 'digitando';
+    digit.innerHTML = `<div class="msg-avatar" style="background:var(--verde);">S</div><div class="msg-balao"><div class="digitando"><span></span><span></span><span></span></div></div>`;
+    chat.appendChild(digit); chat.scrollTop = chat.scrollHeight;
+    setTimeout(() => {
+      const d = document.getElementById('digitando'); if (d) d.remove();
+      const el = document.createElement('div'); el.className = 'msg sistema';
+      el.innerHTML = `<div class="msg-avatar" style="background:var(--verde);">S</div><div><div class="msg-balao">${texto}</div><div class="msg-hora" style="text-align:right">${horaAtual()}</div></div>`;
+      chat.appendChild(el); chat.scrollTop = chat.scrollHeight;
+    }, 1200);
+  }
 }
 
 function horaAtual() {
-  const now = new Date();
-  return `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const n = new Date();
+  return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
 }
 
 // ─── RESULTADO FINAL ──────────────────────────────────────────────────────
@@ -1901,17 +1923,22 @@ function mostrarResultado() {
   document.getElementById('res-acertos').textContent = acertosTotais;
   document.getElementById('res-erros').textContent = errosTotais;
   document.getElementById('res-pontos').textContent = `${pct}%`;
+
   let cls, icone, titulo, sub, msg;
   if (pct >= 70) {
-    cls='aprovado'; icone='🎯'; titulo='Simulação Aprovada!'; sub='Desempenho registrado. Encaminhe para revisão do gestor.';
-    msg=`<strong>${nomeColaborador}</strong>, você demonstrou domínio nos protocolos de SAC, Reclame Aqui e gestão de crises. Suas decisões estão alinhadas com os processos da rede. O gestor vai revisar as fases de escrita e definir os próximos passos. Bem-vindo(a) à equipe!`;
+    cls='aprovado'; icone='🎯'; titulo='Simulação Aprovada!';
+    sub='Desempenho registrado. Encaminhe para revisão do gestor.';
+    msg=`<strong>${nomeColaborador}</strong>, você demonstrou domínio nos protocolos de SAC, Reclame Aqui e gestão de crises. O gestor vai revisar as fases de escrita e definir os próximos passos. Bem-vindo(a) à equipe!`;
   } else if (pct >= 50) {
-    cls='medio'; icone='📋'; titulo='Resultado Regular'; sub='Ainda há pontos para reforçar antes de atender clientes.';
-    msg=`<strong>${nomeColaborador}</strong>, você passou pela simulação, mas há decisões que precisam ser revisadas — especialmente triagem de risco e escalada. O gestor vai indicar os módulos para reler antes de uma nova tentativa.`;
+    cls='medio'; icone='📋'; titulo='Resultado Regular';
+    sub='Há pontos para reforçar antes de atuar de forma autônoma.';
+    msg=`<strong>${nomeColaborador}</strong>, você passou pela simulação, mas há decisões que precisam ser revisadas — especialmente triagem de risco e escalada. O gestor vai indicar os módulos para reler.`;
   } else {
-    cls='reprovado'; icone='📚'; titulo='Precisa Reforçar'; sub='Releia os manuais e refaça o simulador.';
-    msg=`<strong>${nomeColaborador}</strong>, o resultado indica que alguns protocolos precisam ser consolidados antes de avançar. O gestor vai identificar os módulos prioritários. Refaça após o reforço!`;
+    cls='reprovado'; icone='📚'; titulo='Precisa Reforçar';
+    sub='Releia os manuais e refaça o simulador.';
+    msg=`<strong>${nomeColaborador}</strong>, o resultado indica que protocolos de SAC precisam ser consolidados. O gestor vai identificar os módulos prioritários. Refaça após o reforço!`;
   }
+
   document.getElementById('res-icone').textContent = icone;
   document.getElementById('res-titulo').textContent = titulo;
   document.getElementById('res-sub').textContent = sub;
@@ -1919,6 +1946,7 @@ function mostrarResultado() {
   document.getElementById('res-pill').textContent = cls==='aprovado' ? '✓ Aprovado(a)' : cls==='medio' ? '⚠ Regular' : '✗ Reforço necessário';
   document.getElementById('res-pill').className = cls;
   document.getElementById('msg-gestor').innerHTML = msg;
+
   const lista = document.getElementById('breakdown-lista');
   lista.innerHTML = '';
   resultadosPorCaso.forEach((r, i) => {
@@ -1927,13 +1955,15 @@ function mostrarResultado() {
     linha.innerHTML = `<div class="caso-nome">Caso ${i+1} — ${r.nome.split(' ').slice(0,2).join(' ')}</div><div class="caso-stars">${stars}</div><div class="pontos-caso">${r.pontos}/30</div>`;
     lista.appendChild(linha);
   });
+
   try {
     const chave = 'cresci_simulador_sac_resultados';
     const ex = JSON.parse(localStorage.getItem(chave) || '[]');
-    ex.push({ nome: nomeColaborador, data: new Date().toISOString(), pontos: pontosTotais, total_possivel: totalPossivel, acertos: acertosTotais, erros: errosTotais, percentual: pct, por_caso: resultadosPorCaso, respostas_escritas: respostasEscrita });
+    ex.push({ nome: nomeColaborador, data: new Date().toISOString(), pontos: pontosTotais, total: totalPossivel, acertos: acertosTotais, erros: errosTotais, percentual: pct, por_caso: resultadosPorCaso, respostas_escritas: respostasEscrita });
     localStorage.setItem(chave, JSON.stringify(ex));
   } catch(e) {}
 }
+
 </script>
 </body>
 </html>
