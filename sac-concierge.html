@@ -1,0 +1,1939 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador SAC & Reclame Aqui — Cresci e Perdi</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --verde: #2d6a4f;
+  --verde-claro: #52b788;
+  --verde-neon: #40c97a;
+  --amarelo: #f4a261;
+  --vermelho: #e63946;
+  --escuro: #0d1117;
+  --escuro2: #161b22;
+  --escuro3: #21262d;
+  --borda: #30363d;
+  --texto: #e6edf3;
+  --texto2: #8b949e;
+  --branco: #f0f6fc;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--escuro);
+  color: var(--texto);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── TELA INICIAL ─────────────────────────────── */
+#tela-inicio {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+}
+
+#tela-inicio::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(45,106,79,.25) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 80% 80%, rgba(82,183,136,.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.inicio-card {
+  background: var(--escuro2);
+  border: 1px solid var(--borda);
+  border-radius: 24px;
+  padding: 3rem;
+  max-width: 560px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.inicio-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--verde), var(--verde-neon), var(--amarelo));
+}
+
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 2.5rem;
+}
+
+.logo-icon {
+  width: 44px; height: 44px;
+  background: var(--verde);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+}
+
+.logo-text {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--branco);
+  line-height: 1.2;
+}
+
+.logo-text span {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  font-size: .72rem;
+  color: var(--texto2);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.inicio-card h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: .75rem;
+  background: linear-gradient(135deg, var(--branco) 40%, var(--verde-claro));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.inicio-card p {
+  color: var(--texto2);
+  font-size: .95rem;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .75rem;
+  margin-bottom: 2rem;
+}
+
+.info-item {
+  background: var(--escuro3);
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  padding: .9rem 1rem;
+}
+
+.info-item .label {
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--texto2);
+  margin-bottom: .25rem;
+}
+
+.info-item .valor {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--branco);
+}
+
+.campo-grupo { margin-bottom: 1rem; }
+.campo-grupo label {
+  display: block;
+  font-size: .75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--texto2);
+  margin-bottom: .5rem;
+}
+.campo-grupo input {
+  width: 100%;
+  padding: .85rem 1rem;
+  background: var(--escuro3);
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .95rem;
+  color: var(--texto);
+  outline: none;
+  transition: border-color .2s;
+}
+.campo-grupo input:focus { border-color: var(--verde-claro); }
+.campo-grupo input::placeholder { color: var(--texto2); }
+
+.btn-comecar {
+  width: 100%;
+  padding: 1rem;
+  background: var(--verde);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: .03em;
+  transition: all .2s;
+  margin-top: .5rem;
+}
+.btn-comecar:hover { background: #1e4d38; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45,106,79,.4); }
+
+.erro-msg { color: var(--vermelho); font-size: .82rem; margin-top: .4rem; display: none; }
+
+/* ── TELA SIMULADOR ───────────────────────────── */
+#tela-simulador { display: none; min-height: 100vh; }
+
+.sim-header {
+  background: var(--escuro2);
+  border-bottom: 1px solid var(--borda);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.sim-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.sim-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--verde-claro);
+}
+
+.sim-usuario {
+  font-size: .82rem;
+  color: var(--texto2);
+}
+
+.sim-usuario strong { color: var(--texto); }
+
+.sim-progresso-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sim-caso-label {
+  font-size: .8rem;
+  color: var(--texto2);
+  white-space: nowrap;
+}
+
+.sim-caso-label strong {
+  color: var(--verde-neon);
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+}
+
+.barra-topo {
+  height: 3px;
+  background: var(--escuro3);
+}
+
+.barra-topo-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--verde), var(--verde-neon));
+  transition: width .5s ease;
+}
+
+/* ── LAYOUT DO SIMULADOR ─────────────────────── */
+.sim-body {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  min-height: calc(100vh - 61px);
+}
+
+/* Painel esquerdo: chat */
+.painel-chat {
+  border-right: 1px solid var(--borda);
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-topbar {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--borda);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.franqueado-avatar {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--verde), var(--verde-claro));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: .9rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.franqueado-info .nome {
+  font-weight: 600;
+  font-size: .9rem;
+  color: var(--branco);
+}
+
+.franqueado-info .cidade {
+  font-size: .75rem;
+  color: var(--texto2);
+}
+
+.status-badge {
+  margin-left: auto;
+  background: rgba(64,201,122,.15);
+  color: var(--verde-neon);
+  border: 1px solid rgba(64,201,122,.3);
+  border-radius: 100px;
+  padding: .2rem .7rem;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .05em;
+}
+
+.chat-mensagens {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 300px;
+  max-height: 420px;
+}
+
+.msg {
+  display: flex;
+  gap: .75rem;
+  animation: fadeSlide .3s ease;
+}
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.msg.franqueado { align-items: flex-start; }
+.msg.sistema { align-items: flex-start; flex-direction: row-reverse; }
+.msg.sistema .msg-avatar { background: var(--verde); }
+
+.msg-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--escuro3);
+  border: 1px solid var(--borda);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  color: var(--branco);
+}
+
+.msg-balao {
+  background: var(--escuro3);
+  border: 1px solid var(--borda);
+  border-radius: 0 14px 14px 14px;
+  padding: .75rem 1rem;
+  max-width: 85%;
+  font-size: .88rem;
+  line-height: 1.55;
+  color: var(--texto);
+}
+
+.msg.sistema .msg-balao {
+  background: rgba(45,106,79,.2);
+  border-color: rgba(82,183,136,.3);
+  border-radius: 14px 0 14px 14px;
+  color: var(--verde-claro);
+}
+
+.msg-hora {
+  font-size: .65rem;
+  color: var(--texto2);
+  margin-top: .3rem;
+}
+
+.digitando {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: .6rem .8rem;
+}
+
+.digitando span {
+  width: 6px; height: 6px;
+  background: var(--texto2);
+  border-radius: 50%;
+  animation: bounce .9s infinite;
+}
+
+.digitando span:nth-child(2) { animation-delay: .15s; }
+.digitando span:nth-child(3) { animation-delay: .3s; }
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+/* Painel direito: decisão */
+.painel-decisao {
+  display: flex;
+  flex-direction: column;
+  background: var(--escuro2);
+}
+
+.decisao-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--borda);
+}
+
+.fase-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(244,162,97,.12);
+  border: 1px solid rgba(244,162,97,.3);
+  color: var(--amarelo);
+  border-radius: 100px;
+  padding: .25rem .75rem;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: .75rem;
+}
+
+.decisao-titulo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--branco);
+  margin-bottom: .4rem;
+}
+
+.decisao-sub {
+  font-size: .8rem;
+  color: var(--texto2);
+  line-height: 1.5;
+}
+
+.decisao-corpo {
+  flex: 1;
+  padding: 1.25rem 1.5rem;
+  overflow-y: auto;
+}
+
+.opcoes-lista {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.opcao-btn {
+  width: 100%;
+  text-align: left;
+  background: var(--escuro3);
+  border: 1.5px solid var(--borda);
+  border-radius: 12px;
+  padding: .85rem 1rem;
+  color: var(--texto);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+}
+
+.opcao-btn:hover:not(:disabled) {
+  border-color: var(--verde-claro);
+  background: rgba(82,183,136,.07);
+}
+
+.opcao-letra {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  background: var(--escuro);
+  border: 1.5px solid var(--borda);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: .72rem;
+  color: var(--texto2);
+  flex-shrink: 0;
+  transition: all .2s;
+}
+
+.opcao-btn:hover:not(:disabled) .opcao-letra {
+  border-color: var(--verde-claro);
+  color: var(--verde-claro);
+}
+
+.opcao-btn.certa {
+  border-color: var(--verde-neon) !important;
+  background: rgba(64,201,122,.1) !important;
+}
+
+.opcao-btn.certa .opcao-letra {
+  background: var(--verde-neon);
+  border-color: var(--verde-neon);
+  color: #0d1117;
+}
+
+.opcao-btn.errada {
+  border-color: var(--vermelho) !important;
+  background: rgba(230,57,70,.08) !important;
+}
+
+.opcao-btn.errada .opcao-letra {
+  background: var(--vermelho);
+  border-color: var(--vermelho);
+  color: white;
+}
+
+.opcao-btn.mostrar-certa {
+  border-color: var(--verde-neon) !important;
+  background: rgba(64,201,122,.06) !important;
+}
+
+.opcao-btn.mostrar-certa .opcao-letra {
+  border-color: var(--verde-neon);
+  color: var(--verde-neon);
+}
+
+.opcao-btn:disabled { cursor: default; }
+
+/* Feedback box */
+.feedback-box {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid;
+  font-size: .82rem;
+  line-height: 1.6;
+  display: none;
+  animation: fadeSlide .3s ease;
+}
+
+.feedback-box.certo {
+  background: rgba(64,201,122,.08);
+  border-color: rgba(64,201,122,.3);
+  color: #6ee7a0;
+}
+
+.feedback-box.errado {
+  background: rgba(230,57,70,.08);
+  border-color: rgba(230,57,70,.3);
+  color: #f87171;
+}
+
+.feedback-titulo {
+  font-weight: 700;
+  margin-bottom: .35rem;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+/* Pontuação inline */
+.pontos-flash {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: .8rem;
+  padding: .2rem .6rem;
+  border-radius: 100px;
+  margin-left: .5rem;
+}
+
+.pontos-flash.mais { background: rgba(64,201,122,.2); color: var(--verde-neon); }
+.pontos-flash.zero { background: rgba(230,57,70,.2); color: #f87171; }
+
+/* Botão próximo */
+.btn-proximo {
+  margin: 1rem 1.5rem 1.5rem;
+  width: calc(100% - 3rem);
+  padding: .85rem;
+  background: var(--verde);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: all .2s;
+  display: none;
+}
+
+.btn-proximo:hover { background: #1e4d38; }
+
+/* Placar lateral */
+.placar-row {
+  padding: .75rem 1.5rem;
+  border-top: 1px solid var(--borda);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.placar-item { text-align: center; }
+.placar-item .num {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.placar-item .num.verde { color: var(--verde-neon); }
+.placar-item .num.vermelho { color: var(--vermelho); }
+.placar-item .num.amarelo { color: var(--amarelo); }
+
+.placar-item .lab {
+  font-size: .65rem;
+  color: var(--texto2);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-top: 2px;
+}
+
+/* ── TELA RESULTADO ───────────────────────────── */
+#tela-resultado { display: none; min-height: 100vh; }
+
+.resultado-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+}
+
+.resultado-wrap::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 50% 40% at 50% 0%, rgba(45,106,79,.2) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.resultado-card {
+  background: var(--escuro2);
+  border: 1px solid var(--borda);
+  border-radius: 24px;
+  padding: 2.5rem;
+  max-width: 640px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.resultado-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--verde), var(--verde-neon), var(--amarelo));
+}
+
+.resultado-icone { font-size: 3.5rem; margin-bottom: 1rem; text-align: center; }
+
+.resultado-card h2 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.8rem;
+  text-align: center;
+  margin-bottom: .5rem;
+  background: linear-gradient(135deg, var(--branco), var(--verde-claro));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.resultado-sub {
+  text-align: center;
+  color: var(--texto2);
+  font-size: .9rem;
+  margin-bottom: 2rem;
+}
+
+.nota-grande {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 4.5rem;
+  text-align: center;
+  line-height: 1;
+  margin-bottom: .5rem;
+}
+
+.nota-grande.aprovado { color: var(--verde-neon); }
+.nota-grande.medio { color: var(--amarelo); }
+.nota-grande.reprovado { color: var(--vermelho); }
+
+.status-pill-res {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.status-pill-res span {
+  padding: .35rem 1.2rem;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: .8rem;
+  letter-spacing: .04em;
+}
+
+.status-pill-res span.aprovado { background: rgba(64,201,122,.15); color: var(--verde-neon); border: 1px solid rgba(64,201,122,.3); }
+.status-pill-res span.medio { background: rgba(244,162,97,.15); color: var(--amarelo); border: 1px solid rgba(244,162,97,.3); }
+.status-pill-res span.reprovado { background: rgba(230,57,70,.15); color: #f87171; border: 1px solid rgba(230,57,70,.3); }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .75rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-item {
+  background: var(--escuro3);
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.stat-item .num {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.8rem;
+  line-height: 1;
+  color: var(--branco);
+}
+
+.stat-item .lab {
+  font-size: .7rem;
+  color: var(--texto2);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-top: 4px;
+}
+
+/* Breakdown por caso */
+.breakdown {
+  background: var(--escuro3);
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.breakdown h3 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: .85rem;
+  color: var(--texto2);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 1rem;
+}
+
+.caso-linha {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: .6rem;
+}
+
+.caso-linha:last-child { margin-bottom: 0; }
+
+.caso-nome {
+  font-size: .82rem;
+  color: var(--texto);
+  flex: 1;
+}
+
+.caso-stars {
+  display: flex;
+  gap: 3px;
+}
+
+.star {
+  width: 14px; height: 14px;
+  border-radius: 3px;
+}
+
+.star.cheia { background: var(--verde-neon); }
+.star.vazia { background: var(--escuro); border: 1px solid var(--borda); }
+
+.pontos-caso {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: .8rem;
+  color: var(--texto2);
+  min-width: 40px;
+  text-align: right;
+}
+
+/* Mensagem gestor */
+.msg-gestor {
+  background: rgba(45,106,79,.12);
+  border: 1px solid rgba(82,183,136,.2);
+  border-radius: 14px;
+  padding: 1.25rem;
+  font-size: .85rem;
+  line-height: 1.65;
+  color: var(--verde-claro);
+  margin-bottom: 1.5rem;
+}
+
+.msg-gestor strong { color: var(--branco); }
+
+.btn-finalizar-res {
+  width: 100%;
+  padding: .9rem;
+  background: var(--verde);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: .95rem;
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.btn-finalizar-res:hover { background: #1e4d38; }
+
+@media (max-width: 768px) {
+  .sim-body { grid-template-columns: 1fr; }
+  .painel-chat { border-right: none; border-bottom: 1px solid var(--borda); }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     TELA 1 — IDENTIFICAÇÃO
+══════════════════════════════════════════════ -->
+<div id="tela-inicio">
+  <div class="inicio-card">
+    <div class="logo-row">
+      <div class="logo-icon">👕</div>
+      <div class="logo-text">
+        Cresci e Perdi
+        <span>SAC & Reclame Aqui</span>
+      </div>
+    </div>
+
+    <h1>Simulador<br>SAC & Reclame Aqui</h1>
+    <p>Você vai enfrentar <strong>12 casos reais</strong> de atendimento ao cliente e reclamações — SAC, Reclame Aqui, crises e situações hipotéticas. Algumas fases exigem que você <strong>escreva a resposta</strong>, avaliada em conteúdo, tom e português.</p>
+
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="label">Casos</div>
+        <div class="valor">12 situações reais</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Fases por caso</div>
+        <div class="valor">3 decisões</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Pontuação máx.</div>
+        <div class="valor">360 pontos</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Aprovação</div>
+        <div class="valor">≥ 70% (252 pts)</div>
+      </div>
+    </div>
+
+    <div class="campo-grupo">
+      <label>Seu nome completo</label>
+      <input type="text" id="input-nome" placeholder="Digite seu nome..." autocomplete="off">
+      <div class="erro-msg" id="erro-nome">Por favor, informe seu nome.</div>
+    </div>
+
+    <button class="btn-comecar" onclick="iniciarSimulador()">Iniciar Simulador →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TELA 2 — SIMULADOR
+══════════════════════════════════════════════ -->
+<div id="tela-simulador">
+  <div class="sim-header">
+    <div class="sim-header-left">
+      <div class="sim-logo">📞 SAC</div>
+      <div class="sim-usuario">Atendente: <strong id="sim-nome">—</strong></div>
+    </div>
+    <div class="sim-progresso-wrap">
+      <div class="sim-caso-label">Caso <strong id="sim-caso-num">1</strong> de 12</div>
+    </div>
+  </div>
+  <div class="barra-topo"><div class="barra-topo-fill" id="barra-fill" style="width:0%"></div></div>
+
+  <div class="sim-body">
+    <!-- Painel chat -->
+    <div class="painel-chat">
+      <div class="chat-topbar">
+        <div class="franqueado-avatar" id="chat-avatar">?</div>
+        <div class="franqueado-info">
+          <div class="nome" id="chat-nome-franqueado">—</div>
+          <div class="cidade" id="chat-cidade">—</div>
+        </div>
+        <div class="status-badge">● Ao vivo</div>
+      </div>
+      <div class="chat-mensagens" id="chat-mensagens"></div>
+    </div>
+
+    <!-- Painel decisão -->
+    <div class="painel-decisao">
+      <div class="decisao-header">
+        <div class="fase-pill" id="fase-pill">Fase 1 — Triagem</div>
+        <div class="decisao-titulo" id="decisao-titulo">O que você faz?</div>
+        <div class="decisao-sub" id="decisao-sub">Leia a mensagem e decida como agir.</div>
+      </div>
+
+      <div class="decisao-corpo">
+        <div class="opcoes-lista" id="opcoes-lista"></div>
+        <div class="feedback-box" id="feedback-box">
+          <div class="feedback-titulo" id="feedback-titulo"></div>
+          <div id="feedback-texto"></div>
+        </div>
+      </div>
+
+      <button class="btn-proximo" id="btn-proximo" onclick="proximaFase()">Continuar →</button>
+
+      <div class="placar-row">
+        <div class="placar-item">
+          <div class="num verde" id="placar-acertos">0</div>
+          <div class="lab">Acertos</div>
+        </div>
+        <div class="placar-item">
+          <div class="num vermelho" id="placar-erros">0</div>
+          <div class="lab">Erros</div>
+        </div>
+        <div class="placar-item">
+          <div class="num amarelo" id="placar-pontos">0</div>
+          <div class="lab">Pontos</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TELA 3 — RESULTADO
+══════════════════════════════════════════════ -->
+<div id="tela-resultado">
+  <div class="resultado-wrap">
+    <div class="resultado-card">
+      <div class="resultado-icone" id="res-icone">🎯</div>
+      <h2 id="res-titulo">Simulação Concluída!</h2>
+      <div class="resultado-sub" id="res-sub">Resultado registrado com sucesso.</div>
+      <div class="nota-grande" id="res-nota">—</div>
+      <div class="status-pill-res"><span id="res-pill">—</span></div>
+
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="num" id="res-acertos">—</div>
+          <div class="lab">Acertos</div>
+        </div>
+        <div class="stat-item">
+          <div class="num" id="res-erros">—</div>
+          <div class="lab">Erros</div>
+        </div>
+        <div class="stat-item">
+          <div class="num" id="res-pontos">—</div>
+          <div class="lab">Pontos</div>
+        </div>
+      </div>
+
+      <div class="breakdown">
+        <h3>Desempenho por caso</h3>
+        <div id="breakdown-lista"></div>
+      </div>
+
+      <div class="msg-gestor" id="msg-gestor">—</div>
+
+      <button class="btn-finalizar-res" onclick="window.location.reload()">Refazer Simulação</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════ -->
+<script>
+// ─── BANCO DE CASOS SAC & RECLAME AQUI (12 casos) ─────────────────────────
+const CASOS = [
+
+  // ══════════════════════════════════════════════════════════
+  // CASO 1 — CLIENTE ACREDITA ESTAR FALANDO COM A LOJA (cotidiano / trivial)
+  // ══════════════════════════════════════════════════════════
+  {
+    id: 1,
+    cliente: { nome: 'Camila Torres', origem: 'WhatsApp SAC', avatar: 'CT', tipo: 'cliente' },
+    fases: [
+      {
+        tipo: 'triagem',
+        pill: 'Fase 1 — Triagem',
+        titulo: 'Como você classifica essa mensagem?',
+        sub: 'Leia com atenção e defina a natureza e o encaminhamento correto.',
+        mensagem: 'Oi! Tô ligando pra saber se a loja da rua das flores está aberta amanhã. Tem alguma promoção?',
+        opcoes: [
+          { letra: 'A', texto: 'Reclamação — registrar e acionar a loja', certa: false },
+          { letra: 'B', texto: 'Dúvida geral — orientar a cliente que está falando com a franqueadora (não com a loja), e direcionar para o canal correto da unidade', certa: true },
+          { letra: 'C', texto: 'Ignorar pois o SAC não atende dúvidas sobre lojas específicas', certa: false },
+          { letra: 'D', texto: 'Crise — escalar para o supervisor imediatamente', certa: false }
+        ],
+        feedback_certo: 'Correto! A maioria dos clientes que entra em contato com o SAC acredita estar falando com a loja. A missão é orientar com clareza que está falando com a franqueadora e tentar resolver ou direcionar.',
+        feedback_errado: 'O SAC atende clientes que muitas vezes acreditam estar falando com a loja. A missão é orientar com clareza e direcionar — nunca ignorar, nunca tratar como reclamação sem ter reclamação.',
+        resposta_sistema: 'Olá, Camila! Aqui é o SAC da Cresci e Perdi — a central da franqueadora. 😊 Para saber sobre horários e promoções da unidade específica, o melhor é entrar em contato diretamente com a loja pelo Instagram dela. Posso te ajudar a localizar o perfil da unidade da sua cidade, se quiser!'
+      },
+      {
+        tipo: 'resposta',
+        pill: 'Fase 2 — Resposta',
+        titulo: 'Ela pede o telefone da loja. Como você responde?',
+        sub: 'Qual é a orientação correta sobre repasse de contatos?',
+        mensagem: 'Ah, tá! Então me passa o número da dona da loja que eu falo direto com ela.',
+        opcoes: [
+          { letra: 'A', texto: 'Passar o WhatsApp da franqueada, pois é uma dúvida simples e não tem risco', certa: false },
+          { letra: 'B', texto: 'Informar que o SAC não repassa contatos diretos de unidades — direcionar para o Instagram da loja ou oferecer intermediar pelo SAC se necessário', certa: true },
+          { letra: 'C', texto: 'Pedir o WhatsApp da cliente para repassar para a franqueada entrar em contato', certa: false },
+          { letra: 'D', texto: 'Dizer que não tem o contato da loja e encerrar o atendimento', certa: false }
+        ],
+        feedback_certo: 'Correto! A regra é inegociável: o SAC NUNCA repassa contato de cliente para franqueado, nem de franqueado para cliente. A franqueadora é sempre a intermediária.',
+        feedback_errado: 'A regra inegociável do SAC: NUNCA repassar contato do franqueado para o cliente nem vice-versa. A franqueadora é sempre a intermediária. Direcionar para o Instagram da loja é a saída correta.',
+        resposta_sistema: 'Camila, o SAC não repassa contatos diretos das unidades — mas posso te indicar o Instagram da loja da sua cidade, onde você encontra horários, novidades e pode mandar mensagem diretamente! Qual cidade você está?'
+      },
+      {
+        tipo: 'complicacao',
+        pill: 'Fase 3 — Complicação',
+        titulo: 'Ela fica irritada e diz que é péssimo atendimento.',
+        sub: 'Mantenha o tom correto e a postura do SAC.',
+        mensagem: 'Que atendimento horrível! Vocês não sabem nada! Vou reclamar disso!',
+        opcoes: [
+          { letra: 'A', texto: 'Pedir desculpas em excesso e prometer melhorar o serviço', certa: false },
+          { letra: 'B', texto: 'Manter tom respeitoso e acolhedor mesmo com a irritação, reconhecer a frustração sem concordar com a crítica, e oferecer ajuda concreta para resolver o que ela precisava', certa: true },
+          { letra: 'C', texto: 'Explicar que a culpa é da loja por não ter canal de atendimento próprio', certa: false },
+          { letra: 'D', texto: 'Encerrar o atendimento pois a cliente está sendo agressiva', certa: false }
+        ],
+        feedback_certo: 'Correto! Tom sempre respeitoso, mesmo com cliente exaltada. Reconhecer a frustração sem entrar em confronto e oferecer ajuda concreta. Nunca culpar a loja e nunca encerrar sem tentar resolver.',
+        feedback_errado: 'Tom sempre respeitoso com clientes exaltados — nunca culpar a loja, nunca encerrar sem tentar resolver. O SAC é a ponte: o cliente precisa sentir que tem uma saída, mesmo que não seja a que esperava.',
+        resposta_sistema: 'Camila, entendo a frustração e lamento se não consegui te ajudar da forma que esperava. Deixa eu tentar de novo: me fala qual cidade você está que eu te indico exatamente como falar com a unidade mais próxima. 😊'
+      }
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // CASO 2 — RECLAMAÇÃO DE PAGAMENTO NÃO RECEBIDO (intermediação SAC)
+  // ══════════════════════════════════════════════════════════
+  {
+    id: 2,
+    cliente: { nome: 'Rafael Souza', origem: 'WhatsApp SAC', avatar: 'RS', tipo: 'fornecedor' },
+    fases: [
+      {
+        tipo: 'triagem',
+        pill: 'Fase 1 — Triagem',
+        titulo: 'Como você classifica essa reclamação?',
+        sub: 'Defina a natureza e o fluxo de intermediação correto.',
+        mensagem: 'Fiz um desapego na loja de São Paulo semana passada. Disseram que o PIX foi enviado mas até agora não recebi nada no meu banco.',
+        opcoes: [
+          { letra: 'A', texto: 'Dúvida — orientar o cliente a verificar os dados bancários cadastrados', certa: false },
+          { letra: 'B', texto: 'Reclamação legítima de pagamento — coletar dados, acionar a loja para apurar o comprovante, e devolver a resposta ao cliente intermediando tudo pelo SAC', certa: true },
+          { letra: 'C', texto: 'Passar o contato da loja para o cliente resolver diretamente', certa: false },
+          { letra: 'D', texto: 'Escalar para o supervisor pois pode ser fraude', certa: false }
+        ],
+        feedback_certo: 'Correto! O SAC intermedia tudo: coleta dados do fornecedor, aciona a loja, obtém o comprovante e devolve ao cliente. Nunca cruza contatos.',
+        feedback_errado: 'Reclamação de pagamento = intermediação SAC. O fluxo correto é: coletar dados → acionar a loja com o formato padrão → aguardar posicionamento → devolver ao cliente. Nunca repassar contatos.',
+        resposta_sistema: 'Rafael, lamentamos o ocorrido! Para apurar, preciso de algumas informações: nome completo, CPF, data do desapego, valor esperado e a chave PIX cadastrada. Vou acionar a unidade agora e te retornar com o posicionamento deles assim que possível!'
+      },
+      {
+        tipo: 'resposta',
+        pill: 'Fase 2 — Resposta',
+        titulo: 'Como você aciona a loja sobre o caso?',
+        sub: 'Escolha o formato correto de acionamento.',
+        mensagem: '[Dados coletados do Rafael: Rafael Souza, CPF 123.456.789-00, desapego dia 18/03, PIX esperado R$85,00, chave: rafael@email.com]',
+        opcoes: [
+          { letra: 'A', texto: 'Ligar para a loja e explicar a situação verbalmente', certa: false },
+          { letra: 'B', texto: 'Usar o formato padrão: "Olá, [loja]. O SAC recebeu o relato de: 🧍 Nome, 📦 Caso, 📲 Contato. Pedimos retorno em até 48h e posicionamento por escrito."', certa: true },
+          { letra: 'C', texto: 'Passar o contato do Rafael diretamente para a franqueada resolver', certa: false },
+          { letra: 'D', texto: 'Aguardar o cliente reclamar novamente antes de acionar a loja', certa: false }
+        ],
+        feedback_certo: 'Correto! O formato padrão de acionamento garante registro e clareza. Nunca verbal, nunca informal, e NUNCA repassar contato do cliente para a loja.',
+        feedback_errado: 'O formato padrão de acionamento é obrigatório: nome do cliente, caso resumido, prazo de 48h, posicionamento por escrito. Isso garante registro e clareza — nunca verbal nem informal.',
+        resposta_sistema: 'Olá, [Loja de SP]! O SAC da Franqueadora recebeu o seguinte relato:\n🧍 Nome: Rafael Souza\n📍 Loja: Unidade SP\n📦 Caso: PIX de R$85,00 do desapego do dia 18/03 não recebido pelo fornecedor\n⏰ Prazo: retorno em até 48h com posicionamento por escrito. Obrigada!'
+      },
+      {
+        tipo: 'escrita',
+        pill: 'Fase 3 — Resposta Livre',
+        titulo: 'A loja confirma que o PIX foi enviado. Como você devolve para o Rafael?',
+        sub: 'A loja enviou o comprovante. Escreva a mensagem para o Rafael intermediando a resposta — sem repassar contatos.',
+        mensagem: '[A loja enviou comprovante: PIX enviado em 18/03 às 16h42 para rafael@email.com, R$85,00. A chave foi confirmada como correta.]',
+        campo_label: 'Sua resposta para o Rafael:',
+        campo_placeholder: 'Escreva aqui como devolveria a resposta ao Rafael com o comprovante...',
+        avaliacao_prompt: `supervisor SAC Cresci Perdi avaliando resposta intermediação pagamento comprovante. Checar: informa que apurou com a loja, menciona data hora valor do pix, não repassa contato da loja, tom respeitoso, orienta próximos passos se não aparecer`,
+        resposta_sistema: 'Rafael, apuramos com a unidade! O PIX de R$85,00 foi enviado no dia 18/03 às 16h42 para a chave rafael@email.com. Se ainda não apareceu, pode ser delay bancário — verifique o extrato do dia 18 e 19/03. Caso não localize, nos avise que acionamos novamente para investigar com o banco. 😊'
+      }
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // CASO 3 — RECLAME AQUI: OPINIÃO (não reclamação)
+  // ══════════════════════════════════════════════════════════
+  {
+    id: 3,
+    cliente: { nome: 'Beatriz Lima', origem: 'Reclame Aqui', avatar: 'BL', tipo: 'cliente' },
+    fases: [
+      {
+        tipo: 'triagem',
+        pill: 'Fase 1 — Triagem',
+        titulo: 'Isso é reclamação ou opinião no Reclame Aqui?',
+        sub: 'A distinção define completamente a tratativa.',
+        mensagem: 'Fui vender roupas na Cresci e Perdi e achei que pagaram muito pouco pelos itens. Esperava receber mais.',
+        opcoes: [
+          { letra: 'A', texto: 'Reclamação — acionar a loja para revisar o valor pago', certa: false },
+          { letra: 'B', texto: 'Opinião — responder explicando o processo de avaliação e o modelo econômico do desapego, formando a cultura sem tratar como reclamação', certa: true },
+          { letra: 'C', texto: 'Escalar para o supervisor pois envolve dinheiro', certa: false },
+          { letra: 'D', texto: 'Ignorar pois é somente uma opinião pessoal', certa: false }
+        ],
+        feedback_certo: 'Correto! Opiniões no Reclame Aqui recebem tratativa diferente: não é reclamação para resolver, é uma oportunidade de explicar o processo e formar a cultura. Nunca ignorar — toda publicação precisa de resposta.',
+        feedback_errado: 'No Reclame Aqui existem dois tipos: reclamação (tem tratativa) e opinião (tem explicação de processo). "Pagaram pouco" é opinião — não há erro a corrigir, há uma cultura a explicar. Nunca ignorar.',
+        resposta_sistema: 'Olá, Beatriz! Obrigada pelo feedback. O valor oferecido no desapego segue um processo de avaliação com base no estado de conservação, marca e demanda de mercado. O GiraCrédito, por exemplo, oferece valor maior do que o PIX justamente para incentivar o ciclo dentro da rede. Caso queira entender melhor como funciona a precificação, estamos à disposição! 💛'
+      },
+      {
+        tipo: 'resposta',
+        pill: 'Fase 2 — Resposta',
+        titulo: 'Ela responde no Reclame Aqui dizendo que achou o processo injusto.',
+        sub: 'Como você mantém o tom correto sem confrontar?',
+        mensagem: 'Acho o processo injusto. A loja ganha muito em cima da gente.',
+        opcoes: [
+          { letra: 'A', texto: 'Concordar parcialmente dizendo que entende a percepção e que vai melhorar', certa: false },
+          { letra: 'B', texto: 'Explicar com clareza e respeito o modelo econômico — o valor de revenda, os custos operacionais e a lógica do GiraCrédito — sem confrontar nem validar a crítica como erro', certa: true },
+          { letra: 'C', texto: 'Dizer que se a Beatriz não está satisfeita, pode não usar o serviço', certa: false },
+          { letra: 'D', texto: 'Escalar para o supervisor pois a cliente pode viralizar a crítica', certa: false }
+        ],
+        feedback_certo: 'Correto! Posicionamento neutro antes da apuração, explicação do processo com respeito, sem confronto e sem validar a crítica como erro operacional. É formação de cultura.',
+        feedback_errado: 'A resposta correta explica o modelo com respeito — sem confrontar, sem concordar que há erro, sem ameaça implícita. É uma oportunidade de ensinar como o processo funciona.',
+        resposta_sistema: 'Beatriz, entendemos a percepção! O modelo da Cresci e Perdi funciona como um ciclo: a loja compra os itens para revendê-los com curadoria, o que envolve custos operacionais. O GiraCrédito existe justamente para aumentar o valor recebido por quem desapega. Não é uma troca perfeita para todos os perfis, mas é transparente. Estamos abertos a qualquer dúvida! 💛'
+      },
+      {
+        tipo: 'complicacao',
+        pill: 'Fase 3 — Complicação',
+        titulo: 'Ela publica um post público no Instagram criticando a loja.',
+        sub: 'A situação saiu do Reclame Aqui. Como você age agora?',
+        mensagem: 'Acabei de publicar um post no meu Instagram falando sobre o preço baixo que recebi. Já tem 200 likes.',
+        opcoes: [
+          { letra: 'A', texto: 'Comentar no post público para explicar o processo', certa: false },
+          { letra: 'B', texto: 'Avaliar visibilidade e velocidade: 200 likes em post aberto = risco médio-alto. Escalar para supervisor, documentar (print com data e hora), não responder publicamente sem alinhamento', certa: true },
+          { letra: 'C', texto: 'Ignorar pois é uma opinião e não tem erro operacional', certa: false },
+          { letra: 'D', texto: 'Pedir para ela remover o post educadamente nos comentários', certa: false }
+        ],
+        feedback_certo: 'Post público com 200 likes = risco médio-alto. Documentar, escalar para supervisor, NÃO responder publicamente sem alinhamento. O protocolo de crise pode ser necessário dependendo da velocidade.',
+        feedback_errado: 'Post público com engajamento = risco real de viralização. O protocolo é: documentar com print, escalar para supervisor, avaliar pelos 4 eixos (impacto, velocidade, visibilidade, peso jurídico), e NÃO responder sem alinhamento.',
+        resposta_sistema: '[Interno — para o supervisor] Alerta: cliente Beatriz Lima publicou post crítico sobre precificação do desapego. 200 likes. Canal: Instagram público. Sem citação jurídica. Avaliação: risco médio. Aguardo orientação para posicionamento público.'
+      }
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // CASO 4 — RECLAME AQUI: RECLAMAÇÃO REAL (produto com defeito)
+  // ══════════════════════════════════════════════════════════
+  {
+    id: 4,
+    cliente: { nome: 'Fernanda Melo', origem: 'Reclame Aqui', avatar: 'FM', tipo: 'cliente' },
+    fases: [
+      {
+        tipo: 'triagem',
+        pill: 'Fase 1 — Triagem',
+        titulo: 'Como você classifica e prioriza essa reclamação?',
+        sub: 'Avalie o risco e defina o fluxo correto.',
+        mensagem: 'Comprei um tênis na Cresci e Perdi de Campinas. Na mesma semana a sola soltou. A loja disse que não troca porque é seminovo. Absurdo!',
+        opcoes: [
+          { letra: 'A', texto: 'Opinião — explicar que produtos seminovos têm limitações de garantia', certa: false },
+          { letra: 'B', texto: 'Reclamação legítima — coletar dados, acionar a loja de Campinas para apurar e posicionar, e intermediar a resposta ao cliente com prazo definido', certa: true },
+          { letra: 'C', texto: 'Escalar imediatamente para o supervisor pois pode virar processo', certa: false },
+          { letra: 'D', texto: 'Dizer à cliente que produtos seminovos não têm garantia e encerrar', certa: false }
+        ],
+        feedback_certo: 'Correto! Reclamação legítima de produto com defeito: coletar dados, acionar a loja, intermediar. Não é para encerrar com argumento de "seminovo" sem apurar — isso pode escalar.',
+        feedback_errado: 'Produto com defeito logo após a compra é reclamação legítima — não é para encerrar com argumento técnico sem apurar. O SAC coleta dados, aciona a loja e intermedia. Encerrar sem apurar pode transformar isso em crise.',
+        resposta_sistema: 'Fernanda, lamentamos! Isso não reflete o padrão que buscamos. Para apurar e resolver, preciso: nome completo, data da compra, valor pago e se tem foto do defeito. Vou acionar a unidade de Campinas e garantir um posicionamento em até 48h. 💛'
+      },
+      {
+        tipo: 'resposta',
+        pill: 'Fase 2 — Resposta',
+        titulo: 'A loja responde que o tênis foi avaliado como bom e não troca.',
+        sub: 'Como você intermedia essa resposta para a cliente?',
+        mensagem: '[A loja informa: "Produto foi avaliado e vendido em bom estado. Não realizamos trocas de seminovos após a venda."]',
+        opcoes: [
+          { letra: 'A', texto: 'Repassar a resposta da loja literalmente para a cliente', certa: false },
+          { letra: 'B', texto: 'Validar internamente se a resposta da loja é suficiente, filtrar a linguagem, e devolver à cliente de forma empática mantendo o SAC como intermediário e abrindo espaço para resolução', certa: true },
+          { letra: 'C', texto: 'Concordar com a loja e encerrar o caso', certa: false },
+          { letra: 'D', texto: 'Dizer à cliente que a loja tem razão e que seminovos não têm garantia', certa: false }
+        ],
+        feedback_certo: 'Correto! O SAC não repassa respostas brutas da loja — filtra, valida e comunica de forma empática. O SAC pressiona a loja para resolução baseada nas métricas da rede, e nunca fecha o caso sem confirmar resolução.',
+        feedback_errado: 'O SAC nunca repassa respostas brutas da loja. Filtra, valida e comunica com empatia. O SAC pressiona por resolução — "não trocamos" pode não ser suficiente se o defeito foi imediato pós-compra.',
+        resposta_sistema: 'Fernanda, conversamos com a unidade de Campinas. Eles registraram que o produto foi avaliado em bom estado antes da venda. No entanto, entendemos que a situação gera frustração. Solicitamos à loja uma análise mais detalhada do caso — vamos te retornar com uma proposta de resolução até [data]. 💛'
+      },
+      {
+        tipo: 'escrita',
+        pill: 'Fase 3 — Resposta Livre',
+        titulo: 'A cliente diz que vai acionar o Procon.',
+        sub: 'Ela escreveu: "Vou acionar o Procon se não resolverem." Escreva como você age internamente e o que responde para ela.',
+        mensagem: 'Se não resolverem até amanhã, vou acionar o Procon e postar tudo no meu Instagram!',
+        campo_label: 'Sua resposta (interna + para a cliente):',
+        campo_placeholder: 'Descreva o que você faz internamente E o que responde para a Fernanda...',
+        avaliacao_prompt: `supervisor SAC Cresci Perdi avaliando resposta a ameaça de Procon e post público. Checar: escala para supervisor internamente, não promete resolução sem autorização, não confirma culpa, mantém tom empático, não entra em confronto, demonstra urgência`,
+        resposta_sistema: '[Interno] Escalada: cliente Fernanda Melo — Reclame Aqui — citou Procon + ameaça de post público. Produto com defeito. Acionar supervisor agora.\n\n[Para a cliente] Fernanda, registramos sua manifestação com prioridade. Estamos analisando o caso com atenção e queremos resolver da melhor forma possível. Nos dê até [prazo] para um posicionamento completo — estamos comprometidos com sua experiência. 💛'
+      }
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // CASO 5 — SINAIS DE RISCO OCULTO (pré-jurídico)
+  // ══════════════════════════════════════════════════════════
+  {
+    id: 5,
+    cliente: { nome: 'Carlos Vieira', origem: 'E-mail SAC', avatar: 'CV', tipo: 'cliente' },
+    fases: [
+      {
+        tipo: 'triagem',
+        pill: 'Fase 1 — Triagem',
+        titulo: 'Você identifica algum sinal de risco nessa mensagem?',
+        sub: 'Leia com atenção além das palavras óbvias.',
+        mensagem: 'Boa tarde. Vim fazer um desapego e a atendente foi grossa comigo na frente de todos. Estou registrando tudo que aconteceu e tenho provas. Quero uma resposta formal.',
+        opcoes: [
+          { letra: 'A', texto: 'Nível 1 — SAC resolve. Reclamação de atendimento padrão, sem urgência', certa: false },
+          { letra: 'B', texto: 'Sinal de risco oculto identificado — "estou registrando tudo" e "tenho provas" são frases de pré-jurídico. Classificar como risco ALTO e tratar com linguagem estritamente cuidadosa', certa: true },
+          { letra: 'C', texto: 'Ignorar as frases e tratar como reclamação de conduta padrão', certa: false },
+          { letra: 'D', texto: 'Escalar como crise imediata pois já citou provas', certa: false }
+        ],
+        feedback_certo: 'Correto! "Estou registrando tudo" e "tenho provas" são sinais de risco oculto — indicam escalada iminente mesmo sem citar processo ou advogado. Classificar como pré-jurídico imediatamente.',
+        feedback_errado: 'Os sinais de risco oculto no manual são exatamente esses: "estou registrando tudo", "tenho provas", "já consultei meus direitos", "vou expor isso". Mesmo sem citar processo, são indicadores de escalada iminente.',
+        resposta_sistema: '[Interno — para o supervisor] Sinal de risco oculto identificado no e-mail de Carlos Vieira: "estou registrando tudo" + "tenho provas" + pedido de resposta formal. Reclassificado como pré-jurídico. Aguardo orientação para resposta.'
+      },
+      {
+        tipo: 'resposta',
+        pill: 'Fase 2 — Resposta',
+        titulo: 'Como você responde ao Carlos enquanto aguarda o supervisor?',
+        sub: 'Qual é a linguagem correta em casos pré-jurídicos?',
+        mensagem: 'Estou aguardando uma resposta formal da empresa.',
+        opcoes: [
+          { letra: 'A', texto: '"Lamentamos o ocorrido. Vamos verificar com a loja e te retornar em breve."', certa: false },
+          { letra: 'B', texto: '"Recebemos sua manifestação. Ela está sendo analisada com atenção pelos setores responsáveis. Nos comprometemos a oferecer um retorno formal até [data]." — Sem assumir culpa, sem prometer resolução específica', certa: true },
+          { letra: 'C', texto: '"Lamentamos o comportamento da nossa atendente. Vamos tomar as providências cabíveis."', certa: false },
+          { letra: 'D', texto: 'Não responder até ter a resposta completa da loja', certa: false }
+        ],
+        feedback_certo: 'Correto! Em casos pré-jurídicos: linguagem estritamente condicional, sem assumir culpa, sem prometer solução específica, sem responsabilizar a loja antes de apurar. Sempre acusar recebimento com prazo.',
+        feedback_errado: 'Em casos pré-jurídicos: NUNCA assumir culpa antes de apurar, NUNCA prometer resolução específica, NUNCA ficar sem responder. Acusar recebimento com prazo é obrigatório — deixar sem resposta é pior que qualquer coisa.',
+        resposta_sistema: 'Carlos, recebemos sua manifestação. Ela está sendo analisada com atenção pelos setores responsáveis. Nos comprometemos a oferecer um retorno formal e completo até [data]. Agradecemos a paciência. Atenciosamente, Equipe Cresci e Perdi.'
+      },
+      {
+        tipo: 'complicacao',
+        pill: 'Fase 3 — Complicação',
+        titulo: 'Ele responde mencionando advogado.',
+        sub: 'A situação escalou. O que você faz agora?',
+        mensagem: 'Já consultei meu advogado sobre esse caso. Aguardo posicionamento formal da empresa.',
+        opcoes: [
+          { letra: 'A', texto: 'Responder imediatamente com uma proposta de acordo para resolver rápido', certa: false },
+          { letra: 'B', texto: 'Pausar qualquer resposta em andamento, documentar exatamente o que ele disse (canal, data, hora), escalar IMEDIATAMENTE ao coordenador e ao jurídico, e instruir o analista a usar linguagem estritamente condicional', certa: true },
+          { letra: 'C', texto: 'Pedir que o advogado entre em contato diretamente com a franqueadora', certa: false },
+          { letra: 'D', texto: 'Dizer que lamenta e que vai resolver internamente', certa: false }
+        ],
+        feedback_certo: 'Citação de advogado = escalada imediata ao coordenador + jurídico. Pausar respostas, documentar frase exata com data/hora, registrar no ticket "escalada por citação jurídica". Analista usa linguagem condicional até novo alinhamento.',
+        feedback_errado: 'Advogado citado = escalada imediata ao coordenador + jurídico, sem exceção. Pausar qualquer resposta, documentar a frase exata, registrar no ticket. Nunca propor acordo nem responder de improviso.',
+        resposta_sistema: '[Escalada — para o coordenador e jurídico] Carlos Vieira — e-mail SAC — mencionou advogado: "já consultei meu advogado sobre esse caso." Caso: reclamação de conduta de colaborador. Canal: e-mail. Data: [hoje]. Ticket em pausa até orientação. Aguardando.'
+      }
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // CASO 6 — PEDIDO DE IMPRENSA (jornalista)
+  // ══════════════════════════════════════════════════════════
+  {
+    id: 6,
+    cliente: { nome: 'Juliana Campos', origem: 'E-mail SAC', avatar: 'JC', tipo: 'imprensa' },
+    fases: [
+      {
+        tipo: 'triagem',
+        pill: 'Fase 1 — Triagem',
+        titulo: 'Como você classifica e age com esse contato?',
+        sub: 'Defina prioridade e protocolo correto.',
+        mensagem: 'Boa tarde, sou jornalista da Folha de SP. Estou fazendo uma reportagem sobre franquias de moda infantil e gostaria de uma entrevista com a direção da Cresci e Perdi.',
+        opcoes: [
+          { letra: 'A', texto: 'Responder diretamente com os dados de contato da diretoria', certa: false },
+          { letra: 'B', texto: 'Pedido de imprensa — escalar imediatamente para coordenador e comunicação institucional. Nunca responder sem alinhamento prévio. Acusar recebimento com prazo', certa: true },
+          { letra: 'C', texto: 'Ignorar pois o SAC não atende imprensa', certa: false },
+          { letra: 'D', texto: 'Dizer que a diretoria não concede entrevistas', certa: false }
+        ],
+        feedback_certo: 'Correto! Pedido de imprensa vai direto para coordenador e comunicação institucional. Nunca responder sem alinhamento, nunca repassar contato da diretoria, nunca negar sem alinhamento. Acusar recebimento com prazo.',
+        feedback_errado: 'Pedido de imprensa exige escalada imediata para coordenador e comunicação. O SAC não decide sobre entrevistas nem contatos com a diretoria — acusa recebimento e escala. Nunca ignorar.',
+        resposta_sistema: '[Interno] Pedido de entrevista — Juliana Campos, Folha de SP. Reportagem sobre franquias de moda infantil. Escalar para comunicação institucional e coordenador imediatamente.\n\n[Para a jornalista] Olá, Juliana! Recebemos seu contato. Vou encaminhar para o setor responsável e retornaremos em breve. Obrigada!'
+      },
+      {
+        tipo: 'resposta',
+        pill: 'Fase 2 — Resposta',
+        titulo: 'O coordenador orienta a responder negativamente à entrevista.',
+        sub: 'Como você comunica a recusa de forma profissional?',
+        mensagem: '[O coordenador informa: no momento não é possível conceder entrevistas. Agradecer o interesse e oferecer material institucional.]',
+        opcoes: [
+          { letra: 'A', texto: '"Infelizmente não podemos conceder entrevistas no momento."', certa: false },
+          { letra: 'B', texto: '"Agradecemos o interesse na Cresci e Perdi! No momento nossa agenda não permite uma entrevista, mas ficamos à disposição para enviar materiais institucionais ou responder dúvidas por escrito, caso seja útil para sua reportagem."', certa: true },
+          { letra: 'C', texto: 'Não responder mais pois a jornalista já recebeu o acuse de recebimento', certa: false },
+          { letra: 'D', texto: '"Nossa diretoria está viajando. Tente em outro momento."', certa: false }
+        ],
+        feedback_certo: 'Correto! Recusa educada, com agradecimento genuíno e abertura para alternativas. Nunca fechar completamente — uma jornalista bem tratada pode se tornar aliada futuramente.',
+        feedback_errado: 'A recusa para imprensa deve ser educada, com agradecimento e oferta de alternativa (material por escrito). Nunca fechar completamente, nunca dar desculpa fraca como "está viajando".',
+        resposta_sistema: 'Juliana, agradecemos muito o interesse! No momento nossa agenda não permite uma entrevista, mas ficamos à disposição para enviar materiais institucionais ou responder dúvidas por escrito, caso seja útil para sua reportagem. Basta nos avisar! 💛'
+      },
+      {
+        tipo: 'complicacao',
+        pill: 'Fase 3 — Complicação',
+        titulo: 'A jornalista diz que vai publicar mesmo sem entrevista.',
+        sub: 'Avalie o risco e defina o protocolo.',
+        mensagem: 'Tudo bem, vou publicar a reportagem com as informações que já tenho. A matéria sai na próxima semana.',
+        opcoes: [
+          { letra: 'A', texto: 'Pedir que ela não publique enquanto não conversar com a empresa', certa: false },
+          { letra: 'B', texto: 'Registrar, escalar imediatamente para coordenador e comunicação institucional — potencial exposição pública de mídia = risco alto. Avaliar pelos 4 eixos e acionar protocolo de crise se necessário', certa: true },
+          { letra: 'C', texto: 'Responder dando informações gerais sobre a rede para influenciar positivamente a reportagem', certa: false },
+          { letra: 'D', texto: 'Ignorar pois ela não mencionou nada negativo explicitamente', certa: false }
+        ],
+        feedback_certo: 'Matéria na mídia em 1 semana = risco alto, mesmo sem saber o conteúdo. Escalar imediatamente, avaliar pelos 4 eixos e considerar acionar protocolo de crise preventivamente.',
+        feedback_errado: 'Matéria em mídia aberta = risco alto independente do tom. Escalar imediatamente para coordenador e comunicação. Nunca dar informações sem alinhamento, nunca pedir para não publicar (isso piora). Avaliar pelos 4 eixos.',
+        resposta_sistema: '[Escalada urgente — coordenador + comunicação] Jornalista Juliana Campos (Folha de SP) confirmou publicação de reportagem sobre franquias de moda infantil para a próxima semana. Sem entrevista concedida. Avaliação pelos 4 eixos: impacto ALTO, velocidade ALTA, visibilidade ALTA, peso jurídico BAIXO. Solicito orientação imediata.'
+      }
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // CASO 7 — CRISE PÚBLICA: INFLUENCIADOR (Nível 3)
+  // ══════════════════════════════════════════════════════════
+  {
+    id: 7,
+    cliente: { nome: 'Grupo de Crise', origem: 'WhatsApp Grupo IA', avatar: 'IA', tipo: 'alerta' },
+    fases: [
+      {
+        tipo: 'triagem',
+        pill: 'Fase 1 — Triagem',
+        titulo: 'O alerta da IA chegou no grupo. Como você age?',
+        sub: 'Avalie o nível e decida a ação imediata.',
+        mensagem: '⚠️ ALERTA IA — Uma influenciadora com 180k seguidores publicou um vídeo relatando que a loja de Belo Horizonte recusou o desapego de uma cadeirinha dizendo que "estava suja". O vídeo já tem 50 mil views e está crescendo.',
+        opcoes: [
+          { letra: 'A', texto: 'Nível 1 — SAC resolve. Responder nos comentários do vídeo explicando o processo', certa: false },
+          { letra: 'B', texto: 'Nível 3 — PARAR tudo, não responder publicamente, documentar com print, escalar imediatamente para coordenador + Marketing + Diretoria. Acionar protocolo de crise', certa: true },
+          { letra: 'C', texto: 'Nível 2 — SAC + Operação. Acionar a loja de BH para se posicionar no comentário do vídeo', certa: false },
+          { letra: 'D', texto: 'Aguardar para ver se o vídeo continua crescendo antes de agir', certa: false }
+        ],
+        feedback_certo: 'Correto! Influenciador com 180k + 50k views crescendo = Nível 3. PARAR, documentar, escalar para Diretoria e Marketing, acionar protocolo de crise. Nunca responder publicamente sem alinhamento.',
+        feedback_errado: 'Influenciador com alto engajamento = Nível 3 imediato. Os 4 eixos: impacto ALTÍSSIMO (rede toda), velocidade ALTÍSSIMA (crescendo), visibilidade ALTÍSSIMA (vídeo público), peso jurídico BAIXO mas pode escalar. Protocolo de crise agora.',
+        resposta_sistema: '[Protocolo de crise acionado] Vídeo viral — influenciadora 180k — loja BH. 50k views e crescendo. Criando grupo de crise: ⚠️ CRISE – INFLUENCIADORA BH – [data]. Acionando: SAC + Marketing + Comunicação + Diretoria. Briefing inicial enviado. Nenhuma resposta pública até alinhamento.'
+      },
+      {
+        tipo: 'resposta',
+        pill: 'Fase 2 — Resposta',
+        titulo: 'O coordenador pede uma análise rápida do caso antes de decidir a resposta.',
+        sub: 'Quais informações são essenciais para o briefing de crise?',
+        mensagem: '[O coordenador pede: me passa o briefing do caso para decidir a resposta oficial]',
+        opcoes: [
+          { letra: 'A', texto: 'Resumir apenas o que a influenciadora disse no vídeo', certa: false },
+          { letra: 'B', texto: 'Montar briefing com: resumo do caso, canal de origem, status atual (views/crescimento), loja envolvida, se a loja foi acionada, tom do vídeo, risco jurídico, e recomendação de ação imediata', certa: true },
+          { letra: 'C', texto: 'Aguardar a loja se posicionar antes de passar o briefing', certa: false },
+          { letra: 'D', texto: 'Enviar somente o link do vídeo para o coordenador assistir', certa: false }
+        ],
+        feedback_certo: 'Correto! O briefing de crise precisa ter todos os elementos: resumo do caso, canal, status atual, loja envolvida, tom, risco jurídico e recomendação. Só o link não é suficiente.',
+        feedback_errado: 'O briefing de crise precisa ser completo: resumo, canal, status atual, loja envolvida, tom do conteúdo, risco jurídico e recomendação de ação. Quem recebe o briefing precisa de tudo para decidir.',
+        resposta_sistema: '⚠️ BRIEFING CRISE — Influenciadora BH\n📍 Loja: Cresci e Perdi Belo Horizonte\n📲 Canal: TikTok/Reels — vídeo público\n📊 Status: 50k views, crescendo\n🗣️ Conteúdo: relato de recusa de desapego com argumento de "sujeira"\n⚖️ Risco jurídico: baixo agora, pode escalar\n🔥 Urgência: ALTA\n✅ Recomendação: loja acionada + resposta institucional única via canal oficial'
+      },
+      {
+        tipo: 'escrita',
+        pill: 'Fase 3 — Resposta Livre',
+        titulo: 'O coordenador autoriza uma resposta pública. Escreva o texto.',
+        sub: 'A resposta vai nos comentários do vídeo. Deve ser institucional, empática, sem assumir culpa antes de apurar, e sem entrar em confronto.',
+        mensagem: '[Coordenador autoriza resposta pública nos comentários do vídeo da influenciadora]',
+        campo_label: 'Resposta pública para o vídeo da influenciadora:',
+        campo_placeholder: 'Escreva aqui a resposta institucional para os comentários do vídeo...',
+        avaliacao_prompt: `supervisor SAC Cresci Perdi avaliando resposta pública em crise de influenciador. Checar: tom institucional e empático, não assume culpa antes de apurar, convida para resolver em privado, não entra em confronto, protege a marca, não responsabiliza a loja explicitamente, usa linguagem acolhedora`,
+        resposta_sistema: 'Olá! Ficamos sabendo do ocorrido e queremos entender melhor o que aconteceu. Esse tipo de situação não reflete o padrão que buscamos em nossa rede. Nossa equipe está em contato com a unidade para apurar. Pedimos que nos envie uma mensagem no direct para darmos o atendimento que você merece. 💛'
+      }
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // CASO 8 — RECLAMAÇÃO REPETINDO EM VÁRIAS LOJAS (padrão)
+  // ══════════════════════════════════════════════════════════
+  {
+    id: 8,
+    cliente: { nome: 'Análise Interna', origem: 'Sistema de Tickets', avatar: 'SI', tipo: 'interno' },
+    fases: [
+      {
+        tipo: 'triagem',
+        pill: 'Fase 1 — Triagem',
+        titulo: 'O supervisor identificou um padrão. Qual é o protocolo?',
+        sub: 'Em 1 semana, chegaram 8 reclamações de lojas diferentes com a mesma queixa.',
+        mensagem: 'Em 7 dias: 8 reclamações de clientes diferentes em 5 lojas diferentes dizendo que a avaliadora foi grossa ou desrespeitosa durante o desapego.',
+        opcoes: [
+          { letra: 'A', texto: 'Nível 1 — cada analista resolve individualmente cada reclamação', certa: false },
+          { letra: 'B', texto: 'Nível 2 — Padrão repetindo em várias lojas = sinalizar para análise estratégica + acionar operações/campo para investigar a raiz do problema sistêmico', certa: true },
+          { letra: 'C', texto: 'Nível 3 — escalar para a Diretoria imediatamente como crise', certa: false },
+          { letra: 'D', texto: 'Aguardar mais reclamações para ter uma amostra maior antes de agir', certa: false }
+        ],
+        feedback_certo: 'Correto! Padrão repetindo em várias lojas = Nível 2, não mais Nível 1. Sinalizar como padrão para análise estratégica e acionar operações/campo. Não é crise ainda, mas pode virar.',
+        feedback_errado: 'Reclamação repetindo em múltiplas lojas = padrão sistêmico = Nível 2. O SAC sinaliza para análise estratégica e aciona operações/campo para investigar a causa. Resolver individualmente não resolve o problema.',
+        resposta_sistema: '[Interno — para coordenador e operações] Padrão identificado: 8 reclamações de conduta de avaliadora em 5 lojas diferentes em 7 dias. Sinalizo como padrão sistêmico para análise estratégica. Solicito acionamento de campo para investigar e definir ação corretiva de treinamento.'
+      },
+      {
+        tipo: 'resposta',
+        pill: 'Fase 2 — Resposta',
+        titulo: 'Como você responde para cada cliente que reclamou individualmente?',
+        sub: 'O padrão foi identificado, mas cada cliente ainda aguarda resposta. Qual é o tom correto?',
+        mensagem: '[8 clientes aguardando resposta sobre atendimento grosseiro nas lojas]',
+        opcoes: [
+          { letra: 'A', texto: 'Dizer que é um problema conhecido que está sendo investigado em várias lojas', certa: false },
+          { letra: 'B', texto: 'Responder individualmente cada caso com empatia, sem revelar o padrão interno, sem responsabilizar explicitamente, informando que o caso foi encaminhado para a unidade e que haverá acompanhamento', certa: true },
+          { letra: 'C', texto: 'Pedir desculpas em nome de todas as lojas e prometer treinamento', certa: false },
+          { letra: 'D', texto: 'Aguardar a investigação de campo antes de responder qualquer cliente', certa: false }
+        ],
+        feedback_certo: 'Correto! Cada cliente recebe resposta individual empática, sem revelar análise interna, sem responsabilizar explicitamente, com compromisso de acompanhamento. Nunca revelar o padrão para o cliente.',
+        feedback_errado: 'Cada cliente é tratado individualmente — não se revela análise interna de padrão, não se responsabiliza a loja explicitamente antes de apurar, não se promete treinamento. Empatia + compromisso de acompanhamento.',
+        resposta_sistema: 'Olá! Recebemos seu relato com muita atenção. Esse tipo de experiência não é o padrão que buscamos para nossos clientes. O caso foi encaminhado para a unidade responsável e nossa equipe está acompanhando. Caso não haja resolução satisfatória, nos avise. Obrigada! 💛'
+      },
+      {
+        tipo: 'complicacao',
+        pill: 'Fase 3 — Complicação',
+        titulo: 'Um dos clientes posta no Instagram sobre a grosseria.',
+        sub: 'O caso individual saiu do SAC. Como você reage?',
+        mensagem: 'Um dos 8 clientes publicou um post no Instagram: "Fui humilhada na Cresci e Perdi de Recife. Nunca mais coloco o pé lá." 120 likes.',
+        opcoes: [
+          { letra: 'A', texto: 'Responder nos comentários do post explicando o padrão e pedindo desculpas', certa: false },
+          { letra: 'B', texto: 'Documentar (print com data/hora), avaliar pelos 4 eixos: 120 likes = risco médio. Escalar para supervisor + Marketing. Entrar em contato com a cliente por direct convidando para resolver em privado', certa: true },
+          { letra: 'C', texto: 'Ignorar pois 120 likes não é suficiente para virar crise', certa: false },
+          { letra: 'D', texto: 'Pedir que a cliente remova o post antes de responder', certa: false }
+        ],
+        feedback_certo: 'Post público com engajamento + contexto de padrão sistêmico = escalar e agir. Documentar, avaliar pelos 4 eixos, contatar no direct. Nunca ignorar, nunca pedir remoção.',
+        feedback_errado: 'Post público de 120 likes, mais o contexto de padrão sistêmico, = risco médio que pode crescer. Documentar, escalar, contatar no direct para resolver em privado. Nunca pedir remoção nem ignorar.',
+        resposta_sistema: '[Interno] Escalada: cliente do padrão de conduta publicou post público — Recife — 120 likes. Documentado com print. Avaliação: risco médio com potencial de crescer dado padrão sistêmico ativo.\n\n[Direct para a cliente] Olá! Vimos seu post e lamentamos muito a experiência. Gostaríamos de conversar e resolver isso da melhor forma. Pode nos enviar uma mensagem aqui no direct? 💛'
+      }
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // CASO 9 — ATENDENTE NÃO PODE ABANDONAR O POSTO (hipotético)
+  // ══════════════════════════════════════════════════════════
+  {
+    id: 9,
+    cliente: { nome: 'Situação Interna', origem: 'Situação hipotética', avatar: 'HI', tipo: 'interno' },
+    fases: [
+      {
+        tipo: 'triagem',
+        pill: 'Fase 1 — Triagem',
+        titulo: 'Situação hipotética. O que você faz?',
+        sub: 'Você está no meio de uma crise em andamento quando precisa sair com urgência.',
+        mensagem: 'São 17h50. Você está gerenciando uma crise de Reclame Aqui que pode viralizar. Seu filho passou mal na escola e você precisa sair. O que você faz?',
+        opcoes: [
+          { letra: 'A', texto: 'Sair imediatamente pois família vem primeiro — o time dará um jeito', certa: false },
+          { letra: 'B', texto: 'Acionar imediatamente o coordenador/supervisor, fazer briefing completo do caso em andamento, garantir que outra pessoa assuma o posto antes de sair — nunca abandonar sem passagem formal', certa: true },
+          { letra: 'C', texto: 'Deixar um recado no grupo informando que saiu e que alguém pegue os casos', certa: false },
+          { letra: 'D', texto: 'Responder o cliente rapidamente antes de sair para não ficar sem resposta', certa: false }
+        ],
+        feedback_certo: 'Correto! O manual é claro: mesmo em situações particulares urgentes, o analista NUNCA abandona o posto sem acionar o coordenador e garantir que outra pessoa assuma. Uma crise sem atendimento pode se amplificar.',
+        feedback_errado: 'O manual é explícito: o analista nunca pode abandonar seu posto sem passar formalmente para outra pessoa. Em emergências pessoais, a obrigação é acionar o coordenador, fazer briefing e garantir cobertura antes de sair.',
+        resposta_sistema: '[Ação correta] Mensagem para o coordenador: "Situação pessoal urgente — preciso sair agora. Crise em andamento: [briefing completo do caso]. Aguardo confirmação de cobertura antes de sair." Somente após confirmação de que outra pessoa assumiu, sair.'
+      },
+      {
+        tipo: 'resposta',
+        pill: 'Fase 2 — Resposta',
+        titulo: 'Como você faz o briefing para quem vai te substituir?',
+        sub: 'Você tem 2 minutos. O que precisa passar obrigatoriamente?',
+        mensagem: 'O coordenador confirmou cobertura. Você tem 2 minutos para passar o caso para o colega.',
+        opcoes: [
+          { letra: 'A', texto: 'Passar o link do Reclame Aqui e dizer "tá complicado, me chama se precisar"', certa: false },
+          { letra: 'B', texto: 'Passar: nome do cliente, canal, status atual, o que foi feito até agora, o que está pendente, nível de risco, e próximo passo definido', certa: true },
+          { letra: 'C', texto: 'Passar somente o que o cliente enviou e deixar o colega avaliar', certa: false },
+          { letra: 'D', texto: 'Dizer que é Nível 3 e deixar o coordenador resolver', certa: false }
+        ],
+        feedback_certo: 'Correto! O briefing de passagem precisa ter tudo: quem é, onde está, o que foi feito, o que está pendente, nível de risco e próximo passo. Sem isso, o substituto começa do zero — e o cliente paga o preço.',
+        feedback_errado: 'O briefing de passagem precisa ser completo: nome do cliente, canal, status, histórico do que foi feito, pendências, nível de risco e próximo passo. Passagem incompleta = retrabalho e risco de crise sem cobertura.',
+        resposta_sistema: '⚡ PASSAGEM RÁPIDA — para [colega]\nCliente: [nome] — Reclame Aqui\nStatus: reclamação de produto. Nível 2. Loja acionada, aguardando posicionamento deles.\nÚltima ação: enviei formato padrão para a loja às 16h30.\nPendente: loja não respondeu ainda. Se não responder até 18h, cobrar.\nRisco: médio — cliente tranquila por enquanto.\nPróximo passo: cobrar a loja e devolver ao cliente hoje.'
+      },
+      {
+        tipo: 'escrita',
+        pill: 'Fase 3 — Resposta Livre',
+        titulo: 'Situação hipotética de raciocínio livre',
+        sub: 'No dia seguinte, seu coordenador pergunta: "O que você faria diferente se soubesse que teria que sair de improviso?" Escreva sua reflexão.',
+        mensagem: '[Coordenador:] "O que você aprendeu com a situação de ontem? O que faria diferente?"',
+        campo_label: 'Sua reflexão para o coordenador:',
+        campo_placeholder: 'Escreva aqui sua reflexão sobre prevenção, protocolo e o que aprendeu...',
+        avaliacao_prompt: `supervisor SAC Cresci Perdi avaliando reflexão de colaborador sobre situação de emergência pessoal durante crise. Checar: reconhece a importância de não abandonar o posto, menciona prevenção (briefing prévio, substitutos pré-definidos), demonstra comprometimento institucional, tom profissional e reflexivo`,
+        resposta_sistema: 'A principal lição foi que a cobertura não pode ser improvisada. O ideal seria já ter um substituto pré-definido para situações assim, com acesso aos tickets ativos e ao grupo de crise. Passagem incompleta coloca o cliente e a marca em risco. No futuro, vou garantir que ao menos uma pessoa do time saiba o status dos meus casos ativos sempre — não só quando preciso sair.'
+      }
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // CASO 10 — RECLAME AQUI: RECLAMAÇÃO COM RISCO OCULTO (mau atendimento + provas)
+  // ══════════════════════════════════════════════════════════
+  {
+    id: 10,
+    cliente: { nome: 'Mariana Castro', origem: 'Reclame Aqui', avatar: 'MC', tipo: 'cliente' },
+    fases: [
+      {
+        tipo: 'triagem',
+        pill: 'Fase 1 — Triagem',
+        titulo: 'Avalie o risco dessa reclamação no Reclame Aqui.',
+        sub: 'Leia com atenção os sinais presentes.',
+        mensagem: 'Fui na loja de Curitiba fazer um desapego e a atendente me chamou de chata na frente de outros clientes. Tenho o áudio gravado. Já consultei meus direitos no Procon. Estou aguardando resolução.',
+        opcoes: [
+          { letra: 'A', texto: 'Nível 1 — reclamação de conduta padrão. SAC aciona a loja e resolve', certa: false },
+          { letra: 'B', texto: 'Múltiplos sinais de risco: "tenho áudio gravado" + "já consultei meus direitos no Procon" = pré-jurídico. Nível 2-3. Escalar para supervisor imediatamente, pausar resposta pública, tratar com linguagem estritamente condicional', certa: true },
+          { letra: 'C', texto: 'Nível 2 — acionar operações. Pode ser exagero da cliente', certa: false },
+          { letra: 'D', texto: 'Ignorar a menção ao Procon pois ela não disse que vai acionar, só que consultou', certa: false }
+        ],
+        feedback_certo: '"Tenho provas" (áudio) + "já consultei meus direitos no Procon" = sinais de risco oculto combinados com peso jurídico iminente. Escalar imediatamente, linguagem condicional. "Já consultei" é tão grave quanto "vou acionar".',
+        feedback_errado: '"Áudio gravado" + "já consultei meus direitos no Procon" = dois sinais críticos juntos. "Já consultei" não é menor do que "vou acionar" — indica que o caminho jurídico já está sendo considerado. Escalar e tratar como pré-jurídico.',
+        resposta_sistema: '[Escalada — supervisor] Mariana Castro — Reclame Aqui — Curitiba. Sinais de risco oculto: áudio gravado + consultou Procon. Risco ALTO pré-jurídico. Pausando resposta pública até alinhamento. Aguardo orientação.'
+      },
+      {
+        tipo: 'resposta',
+        pill: 'Fase 2 — Resposta',
+        titulo: 'O supervisor orienta a responder com linguagem condicional. O que isso significa na prática?',
+        sub: 'Escolha a resposta que usa corretamente a linguagem condicional.',
+        mensagem: '[Supervisor orienta: usar linguagem condicional, acusar recebimento, não assumir culpa, dar prazo]',
+        opcoes: [
+          { letra: 'A', texto: '"Lamentamos o ocorrido. Nossa atendente agiu errado e vamos tomar as providências."', certa: false },
+          { letra: 'B', texto: '"Recebemos sua manifestação. O relato descrito, caso confirmado, não reflete os padrões da nossa rede. Estamos apurando junto à unidade e nos comprometemos a retornar em até [prazo]. Agradecemos a paciência."', certa: true },
+          { letra: 'C', texto: '"Pedimos desculpas em nome da loja de Curitiba pelo comportamento relatado."', certa: false },
+          { letra: 'D', texto: '"Verificaremos com a loja se o que você disse realmente aconteceu."', certa: false }
+        ],
+        feedback_certo: '"Caso confirmado" — essa é a linguagem condicional. Não assume culpa, não nega, não responsabiliza antes de apurar. Reconhece o relato sem validar automaticamente e compromete-se com um prazo.',
+        feedback_errado: 'Linguagem condicional usa termos como "o relato descrito, caso confirmado..." — reconhece sem assumir, não responsabiliza antes de apurar, não nega. Assumir culpa antes de apurar em caso pré-jurídico é erro grave.',
+        resposta_sistema: 'Mariana, recebemos sua manifestação. O relato descrito, caso confirmado, não reflete os padrões que buscamos para nossa rede. Estamos apurando junto à unidade de Curitiba com atenção. Comprometemo-nos a retornar em até 48h. Agradecemos a paciência. Equipe Cresci e Perdi 💛'
+      },
+      {
+        tipo: 'complicacao',
+        pill: 'Fase 3 — Complicação',
+        titulo: 'Ela responde no Reclame Aqui com o áudio publicado.',
+        sub: 'A situação escalou. O áudio está público no post.',
+        mensagem: 'Publiquei o áudio aqui no Reclame Aqui para provar o que aconteceu. Todos podem ouvir.',
+        opcoes: [
+          { letra: 'A', texto: 'Responder no Reclame Aqui argumentando que o áudio pode estar editado', certa: false },
+          { letra: 'B', texto: 'Nível 3 acionado: prova pública de conduta = crise real. Protocolo completo: grupo de crise, coordenador, jurídico, comunicação e diretoria. Nenhuma resposta pública sem alinhamento da diretoria', certa: true },
+          { letra: 'C', texto: 'Pedir que ela remova o áudio pois pode ser ilegal gravar sem consentimento', certa: false },
+          { letra: 'D', texto: 'Agradecer a transparência e prometer punição à atendente publicamente', certa: false }
+        ],
+        feedback_certo: 'Prova pública de conduta = Nível 3. Grupo de crise, jurídico, diretoria, comunicação. Nenhuma resposta pública sem alinhamento. Nunca argumentar sobre legalidade do áudio publicamente — isso piora.',
+        feedback_errado: 'Áudio público com prova de conduta = Nível 3 imediato. Protocolo de crise completo. Nunca argumentar sobre legalidade do áudio publicamente, nunca prometer punição, nunca responder sem alinhamento da diretoria.',
+        resposta_sistema: '[Protocolo de crise acionado — Nível 3]\nGrupo criado: ⚠️ CRISE – ÁUDIO CURITIBA – [data]\nMembros: SAC + Jurídico + Comunicação + Diretoria\nBriefing: cliente publicou áudio de colaboradora chamando ela de "chata" no Reclame Aqui. Prova pública. Risco alto de viralização e ação judicial.\nNenhuma resposta pública até alinhamento da diretoria.'
+      }
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // CASO 11 — TOM DE VOZ E CONDUTA (hipotético de raciocínio)
+  // ══════════════════════════════════════════════════════════
+  {
+    id: 11,
+    cliente: { nome: 'Situação Hipotética', origem: 'Treinamento', avatar: 'TH', tipo: 'interno' },
+    fases: [
+      {
+        tipo: 'triagem',
+        pill: 'Fase 1 — Triagem',
+        titulo: 'Qual dessas respostas segue o tom correto do SAC?',
+        sub: 'Avalie as opções com base nos princípios do manual.',
+        mensagem: 'Cliente escreveu: "Comprei uma roupa na loja de vocês e veio com uma mancha enorme. Isso é um absurdo!"',
+        opcoes: [
+          { letra: 'A', texto: '"Pode ter certeza que nossa loja não venderia algo com defeito consciente. Você deve ter visto errado na hora da compra."', certa: false },
+          { letra: 'B', texto: '"Lamentamos a situação! Esse tipo de ocorrência não reflete nosso padrão. Para apurar e resolver, preciso de algumas informações: loja, data da compra e foto do item. Poderia nos enviar?"', certa: true },
+          { letra: 'C', texto: '"Produtos seminovos têm imperfeições normais. Isso está no regulamento do desapego."', certa: false },
+          { letra: 'D', texto: '"Entendemos sua irritação, mas precisamos que você mantenha um tom mais respeitoso para que possamos ajudar."', certa: false }
+        ],
+        feedback_certo: 'Correto! O SAC responde com empatia, sem assumir nem negar culpa, e solicita informações para apurar. Nunca questionar o cliente, nunca usar argumento técnico como escudo, nunca pedir que o cliente mude o tom.',
+        feedback_errado: 'O tom correto do SAC: empático, acolhedor, sem assumir nem negar culpa, sem argumento técnico como escudo, sem pedir que o cliente "seja mais respeitoso". A postura é sempre de parceria e apuração.',
+        resposta_sistema: 'Lamentamos a situação! Esse tipo de ocorrência não reflete nosso padrão. Para apurar e resolver da melhor forma, preciso de: loja onde comprou, data da compra e se possível uma foto do item. Assim consigo acionar a unidade responsável. 💛'
+      },
+      {
+        tipo: 'resposta',
+        pill: 'Fase 2 — Resposta',
+        titulo: 'O cliente responde irritado: "Não vou mandar foto coisa nenhuma, quero meu dinheiro de volta!"',
+        sub: 'Como você conduz sem prometer o que não pode prometer?',
+        mensagem: 'Não vou ficar mandando foto! Quero o reembolso agora! Já basta!',
+        opcoes: [
+          { letra: 'A', texto: 'Prometer o reembolso para acalmar o cliente imediatamente', certa: false },
+          { letra: 'B', texto: 'Reconhecer a frustração, explicar que a foto é para agilizar a apuração (não obrigatória), e informar que o SAC vai acionar a loja mesmo assim — mas que a resolução depende de apuração. Sem prometer reembolso', certa: true },
+          { letra: 'C', texto: 'Dizer que sem foto não é possível dar sequência ao caso', certa: false },
+          { letra: 'D', texto: 'Escalar para o supervisor pois o cliente está sendo agressivo', certa: false }
+        ],
+        feedback_certo: 'Correto! Reconhece a frustração, explica o valor da foto sem obrigar, e aciona a loja mesmo assim. NUNCA prometer reembolso sem apurar — isso gera passivo que o SAC não tem autoridade para assumir.',
+        feedback_errado: 'Nunca prometer reembolso sem apurar. A foto é para agilizar, não é bloqueio. O SAC pode acionar a loja mesmo sem ela. Prometer o que não pode = comprometer a franqueadora sem autoridade.',
+        resposta_sistema: 'Entendemos a frustração! A foto seria para agilizar a apuração, mas não é obrigatória. Vou acionar a loja agora mesmo com os dados que você me deu. Assim que tiver um posicionamento deles, te retorno com as opções disponíveis. Pode deixar comigo! 💛'
+      },
+      {
+        tipo: 'escrita',
+        pill: 'Fase 3 — Resposta Livre',
+        titulo: 'Raciocínio livre: qual é a diferença entre empatia e concordância no SAC?',
+        sub: 'O coordenador pergunta: "Por que o SAC é empático mas não concorda automaticamente com o cliente?" Escreva sua resposta.',
+        mensagem: '[Coordenador, em treinamento:] "Me explica: por que somos empáticos mas nem sempre damos razão ao cliente?"',
+        campo_label: 'Sua resposta para o coordenador:',
+        campo_placeholder: 'Explique a lógica entre empatia, posicionamento neutro e apuração no SAC...',
+        avaliacao_prompt: `supervisor SAC Cresci Perdi avaliando resposta conceitual sobre diferença entre empatia e concordância. Checar: entende que empatia é reconhecer o sentimento sem validar o fato, menciona que a prioridade é o risco da marca e não determinar quem está certo, demonstra compreensão do papel de intermediário neutro do SAC`,
+        resposta_sistema: 'Empatia é reconhecer o sentimento do cliente — a frustração é real e merece acolhimento — sem necessariamente validar que o fato aconteceu como ele descreveu. O SAC não está ali para determinar quem está certo: está ali para avaliar o risco para a marca e encontrar uma resolução. Se concordarmos antes de apurar, assumimos culpa sem evidência — e isso pode criar passivo jurídico. A neutralidade é uma proteção, não uma frieza.'
+      }
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // CASO 12 — CRISE DE E-MAIL + GRUPO IA + ESCALADA COMPLETA
+  // ══════════════════════════════════════════════════════════
+  {
+    id: 12,
+    cliente: { nome: 'Monitoramento IA', origem: 'Grupo WhatsApp IA', avatar: 'AI', tipo: 'alerta' },
+    fases: [
+      {
+        tipo: 'triagem',
+        pill: 'Fase 1 — Triagem',
+        titulo: 'O grupo de IA enviou esse alerta. Como você responde?',
+        sub: 'Todo alerta no grupo precisa de uma resposta — mesmo que seja só uma palavra.',
+        mensagem: '⚠️ ALERTA IA — E-mail recebido: cliente relata que produto comprado na loja de Salvador continha uma barata morta. Ela diz que tem fotos e quer ir à imprensa.',
+        opcoes: [
+          { letra: 'A', texto: 'Não responder ainda — verificar primeiro se o alerta é verdadeiro', certa: false },
+          { letra: 'B', texto: 'Sinalizar imediatamente no grupo ("Estou assumindo esse caso"), avaliar pelos 4 eixos, e escalar para Nível 3 — saúde + imprensa + prova = crise crítica', certa: true },
+          { letra: 'C', texto: 'Responder ao cliente pedindo as fotos antes de fazer qualquer movimentação interna', certa: false },
+          { letra: 'D', texto: 'Caso não crítico — pode ser exagero ou mentira do cliente', certa: false }
+        ],
+        feedback_certo: 'Todo alerta no grupo precisa de resposta imediata. Saúde (barata no produto) + fotos como prova + ameaça de imprensa = Nível 3 crítico. Sinalizar, escalar, acionar protocolo de crise.',
+        feedback_errado: 'Todo alerta no grupo precisa de resposta — mesmo que seja "estou assumindo". Saúde (produto contaminado) + prova (fotos) + imprensa = Nível 3 imediato. Nunca silenciar alerta, nunca aguardar confirmação antes de escalar.',
+        resposta_sistema: '[Grupo IA] "Estou assumindo esse caso." → Avaliação: Impacto CRÍTICO (saúde), Velocidade ALTÍSSIMA (imprensa), Visibilidade ALTA (fotos disponíveis), Peso Jurídico ALTO (vigilância sanitária + danos). NÍVEL 3 acionado. Criando grupo de crise agora.'
+      },
+      {
+        tipo: 'resposta',
+        pill: 'Fase 2 — Resposta',
+        titulo: 'Qual é a primeira mensagem para o cliente enquanto o protocolo de crise é ativado?',
+        sub: 'O cliente aguarda resposta. O que você diz — e o que você NÃO diz?',
+        mensagem: '[Cliente aguarda resposta ao e-mail sobre o produto com barata]',
+        opcoes: [
+          { letra: 'A', texto: '"Lamentamos muito! Isso jamais deveria acontecer. Vamos acionar a loja de Salvador agora para resolver."', certa: false },
+          { letra: 'B', texto: '"Recebemos seu relato e estamos tratando com máxima prioridade. Nossa equipe responsável vai entrar em contato em breve. Por favor, guarde os itens e registros disponíveis."', certa: true },
+          { letra: 'C', texto: '"Pedimos que envie as fotos para podermos verificar se a situação é como descrita."', certa: false },
+          { letra: 'D', texto: 'Não responder até ter uma solução completa para oferecer', certa: false }
+        ],
+        feedback_certo: 'Correto! Acusar recebimento com máxima prioridade, pedir que preserve evidências, SEM assumir culpa, SEM prometer solução, SEM questionar o relato. Em casos de saúde, a cautela na resposta é ainda mais crítica.',
+        feedback_errado: 'Em caso de saúde: acusar recebimento com prioridade, pedir preservação de evidências, SEM assumir culpa, SEM prometer, SEM questionar. "Jamais deveria acontecer" assume a culpa antes de apurar — evitar.',
+        resposta_sistema: 'Olá! Recebemos seu relato e estamos tratando com máxima prioridade. Nossa equipe responsável vai entrar em contato muito em breve. Por favor, guarde o produto e qualquer registro disponível (fotos, embalagem) — isso será importante para nossa apuração. Agradecemos por nos informar. 💛'
+      },
+      {
+        tipo: 'escrita',
+        pill: 'Fase 3 — Resposta Livre',
+        titulo: 'Elabore o briefing completo de crise para o grupo.',
+        sub: 'O grupo de crise foi criado. Escreva o briefing inicial que você enviaria para todos os membros.',
+        mensagem: '[Grupo criado: ⚠️ CRISE – PRODUTO CONTAMINADO SALVADOR – [data]. Membros: SAC + Jurídico + Comunicação + Diretoria + Vigilância Sanitária Interna]',
+        campo_label: 'Seu briefing de crise:',
+        campo_placeholder: 'Escreva aqui o briefing completo para o grupo de crise...',
+        avaliacao_prompt: `supervisor SAC Cresci Perdi avaliando briefing de crise de produto contaminado. Checar: inclui quem é o cliente, qual o canal, qual o relato específico, qual o nível de risco avaliado pelos 4 eixos, o que já foi feito, o que está pendente, e qual é a recomendação de ação imediata. Deve ser objetivo e completo`,
+        resposta_sistema: '⚠️ BRIEFING — CRISE PRODUTO CONTAMINADO — SALVADOR\n\n🧍 Cliente: [nome], e-mail recebido hoje às [hora]\n📍 Loja: Salvador\n📦 Relato: produto comprado continha barata morta\n📸 Evidências: cliente afirma ter fotos\n📰 Risco imprensa: cliente ameaçou ir à imprensa\n\n📊 Avaliação 4 eixos:\n• Impacto: CRÍTICO (saúde pública + reputação da rede)\n• Velocidade: ALTÍSSIMA (imprensa já foi mencionada)\n• Visibilidade: ALTA (fotos disponíveis)\n• Peso jurídico: ALTO (VISA + danos morais possíveis)\n\n✅ Feito: acuse de recebimento ao cliente. Evidências preservadas solicitadas.\n⏳ Pendente: apuração com loja Salvador, posicionamento jurídico, decisão de resposta pública.\n\n🔴 Recomendação: contato com a loja IMEDIATO + definição de porta-voz único + resposta ao cliente em até 2h.'
+      }
+    ]
+  }
+
+]; // fim CASOS
+
+// ─── ESTADO ───────────────────────────────────────────────────────────────
+const TOTAL_CASOS = 12;
+let nomeColaborador = '';
+let casoAtual = 0;
+let faseAtual = 0;
+let acertosTotais = 0;
+let errosTotais = 0;
+let pontosTotais = 0;
+let resultadosPorCaso = [];
+let pontosNoCaso = 0;
+let acertosNoCaso = 0;
+let aguardandoIA = false;
+let respostasEscrita = [];
+
+// ─── INICIAR ──────────────────────────────────────────────────────────────
+function iniciarSimulador() {
+  const nome = document.getElementById('input-nome').value.trim();
+  if (!nome) { document.getElementById('erro-nome').style.display = 'block'; return; }
+  nomeColaborador = nome;
+  document.getElementById('tela-inicio').style.display = 'none';
+  document.getElementById('tela-simulador').style.display = 'block';
+  document.getElementById('sim-nome').textContent = nome;
+  document.getElementById('sim-caso-num').textContent = '1';
+  carregarCaso();
+}
+
+// ─── CARREGAR CASO ────────────────────────────────────────────────────────
+function carregarCaso() {
+  const caso = CASOS[casoAtual];
+  faseAtual = 0; pontosNoCaso = 0; acertosNoCaso = 0;
+  document.getElementById('sim-caso-num').textContent = casoAtual + 1;
+  document.getElementById('barra-fill').style.width = `${(casoAtual / TOTAL_CASOS) * 100}%`;
+  document.getElementById('chat-avatar').textContent = caso.cliente.avatar;
+  document.getElementById('chat-nome-franqueado').textContent = caso.cliente.nome;
+  document.getElementById('chat-cidade').textContent = caso.cliente.origem;
+  document.getElementById('chat-mensagens').innerHTML = '';
+  setTimeout(() => { adicionarMensagemFranqueado(caso.fases[0].mensagem); setTimeout(() => carregarFase(), 800); }, 400);
+}
+
+// ─── CARREGAR FASE ────────────────────────────────────────────────────────
+function carregarFase() {
+  const caso = CASOS[casoAtual];
+  const fase = caso.fases[faseAtual];
+  document.getElementById('fase-pill').textContent = fase.pill;
+  document.getElementById('decisao-titulo').textContent = fase.titulo;
+  document.getElementById('decisao-sub').textContent = fase.sub;
+  document.getElementById('feedback-box').style.display = 'none';
+  document.getElementById('btn-proximo').style.display = 'none';
+  const lista = document.getElementById('opcoes-lista');
+  lista.innerHTML = '';
+  if (fase.tipo === 'escrita') {
+    lista.innerHTML = `
+      <div style="margin-bottom:.5rem;">
+        <label style="display:block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--texto2);margin-bottom:.5rem;">${fase.campo_label}</label>
+        <textarea id="campo-escrita" placeholder="${fase.campo_placeholder}"
+          style="width:100%;min-height:120px;padding:.85rem 1rem;background:var(--escuro3);border:1.5px solid var(--borda);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--texto);resize:vertical;outline:none;line-height:1.55;transition:border-color .2s;"
+          onfocus="this.style.borderColor='var(--verde-claro)'" onblur="this.style.borderColor='var(--borda)'"></textarea>
+      </div>
+      <button onclick="avaliarEscrita()" id="btn-avaliar"
+        style="width:100%;padding:.85rem;background:var(--verde);color:white;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;">
+        ✦ Avaliar Resposta →
+      </button>
+      <div id="ia-status" style="text-align:center;font-size:.78rem;color:var(--texto2);margin-top:.5rem;display:none;">⏳ Analisando sua resposta...</div>`;
+  } else {
+    const letras = ['A','B','C','D'];
+    fase.opcoes.forEach((op, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'opcao-btn';
+      btn.onclick = () => responderOpcao(i);
+      btn.innerHTML = `<div class="opcao-letra">${letras[i]}</div><span>${op.texto}</span>`;
+      lista.appendChild(btn);
+    });
+  }
+}
+
+// ─── RESPONDER MÚLTIPLA ESCOLHA ───────────────────────────────────────────
+function responderOpcao(idx) {
+  const caso = CASOS[casoAtual];
+  const fase = caso.fases[faseAtual];
+  const opcoes = document.querySelectorAll('.opcao-btn');
+  opcoes.forEach(b => b.disabled = true);
+  const acertou = fase.opcoes[idx].certa;
+  opcoes.forEach((btn, i) => {
+    if (fase.opcoes[i].certa) { if (i === idx && acertou) btn.classList.add('certa'); else if (!acertou) btn.classList.add('mostrar-certa'); }
+    if (i === idx && !acertou) btn.classList.add('errada');
+  });
+  registrarResultado(acertou, 10);
+  const fb = document.getElementById('feedback-box');
+  fb.className = `feedback-box ${acertou ? 'certo' : 'errado'}`;
+  fb.style.display = 'block';
+  document.getElementById('feedback-titulo').innerHTML = acertou ? `✓ Correto! <span class="pontos-flash mais">+10 pts</span>` : `✗ Resposta incorreta <span class="pontos-flash zero">+0 pts</span>`;
+  document.getElementById('feedback-texto').textContent = acertou ? fase.feedback_certo : fase.feedback_errado;
+  setTimeout(() => adicionarMensagemSistema(fase.resposta_sistema), 600);
+  setTimeout(() => { document.getElementById('btn-proximo').style.display = 'block'; }, 800);
+}
+
+// ─── AVALIAR ESCRITA LOCAL ────────────────────────────────────────────────
+function avaliarEscrita() {
+  const resposta = (document.getElementById('campo-escrita')?.value || '').trim();
+  if (!resposta) { alert('Escreva sua resposta antes de avaliar!'); return; }
+  const caso = CASOS[casoAtual];
+  const fase = caso.fases[faseAtual];
+  document.getElementById('btn-avaliar').disabled = true;
+  document.getElementById('campo-escrita').disabled = true;
+  document.getElementById('ia-status').style.display = 'block';
+  document.getElementById('ia-status').textContent = '⏳ Analisando sua resposta...';
+  setTimeout(() => {
+    const r = resposta.toLowerCase();
+    const palavras = resposta.trim().split(/\s+/).length;
+    const tamOk = palavras >= 20;
+    const palavrasNegativas = ['não sei','não posso','impossível','não é meu','problema seu','boa sorte','não é comigo'];
+    const temNegativa = palavrasNegativas.some(p => r.includes(p));
+    const chaves = extrairChaves(fase.avaliacao_prompt);
+    const acertos_chaves = chaves.filter(c => r.includes(c.toLowerCase()));
+    const pct_chaves = chaves.length > 0 ? acertos_chaves.length / chaves.length : 0.5;
+    const errosComuns = ['vc','tb','pq','msm','qq','hj','tá bom','ta bom','blz','vlw'];
+    const temGiria = errosComuns.some(p => r.includes(p));
+    const muitosMaiusculos = (resposta.match(/[A-ZÁÉÍÓÚÃÕ]{3,}/g) || []).length > 3;
+    let pts_conteudo = tamOk ? 7 : 4;
+    if (pct_chaves >= 0.5) pts_conteudo = Math.min(10, pts_conteudo + 2);
+    if (pct_chaves >= 0.8) pts_conteudo = 10;
+    if (temNegativa) pts_conteudo = Math.max(2, pts_conteudo - 3);
+    let pts_tom = 8;
+    if (temNegativa) pts_tom -= 3;
+    if (palavras < 15) pts_tom -= 2;
+    let pts_pt = 8;
+    if (temGiria) pts_pt -= 3;
+    if (muitosMaiusculos) pts_pt -= 2;
+    if (!tamOk) pts_pt -= 1;
+    const media = ((pts_conteudo + pts_tom + pts_pt) / 3).toFixed(1);
+    const acertou = parseFloat(media) >= 6;
+    registrarResultado(acertou, acertou ? 10 : 0);
+    let feedbacks = [];
+    if (!tamOk) feedbacks.push('Resposta curta demais — em um atendimento real o cliente precisaria de mais orientação.');
+    if (temNegativa) feedbacks.push('Evite respostas que deixam o cliente sem saída clara.');
+    if (temGiria) feedbacks.push('Atenção ao tom: evite abreviações e linguagem informal no atendimento profissional.');
+    if (pct_chaves >= 0.5 && !feedbacks.length) feedbacks.push('Boa resposta! Contém os pontos essenciais esperados para esta situação.');
+    if (!feedbacks.length) feedbacks.push('Resposta dentro do esperado para o protocolo desta situação.');
+    respostasEscrita.push({ caso: casoAtual+1, fase: faseAtual+1, texto: resposta, nota: media, aprovado: acertou });
+    const fb = document.getElementById('feedback-box');
+    fb.className = `feedback-box ${acertou ? 'certo' : 'errado'}`;
+    fb.style.display = 'block';
+    document.getElementById('feedback-titulo').innerHTML = acertou ? `✓ Aprovado! <span class="pontos-flash mais">+10 pts</span>` : `✗ Precisa melhorar <span class="pontos-flash zero">+0 pts</span>`;
+    document.getElementById('feedback-texto').innerHTML = `
+      <div style="display:flex;gap:.5rem;margin-bottom:.6rem;flex-wrap:wrap;">
+        <span style="background:rgba(255,255,255,.08);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;">Conteúdo: ${pts_conteudo}/10</span>
+        <span style="background:rgba(255,255,255,.08);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;">Tom: ${pts_tom}/10</span>
+        <span style="background:rgba(255,255,255,.08);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;">Português: ${pts_pt}/10</span>
+        <span style="background:rgba(255,255,255,.08);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;font-weight:700;">Média: ${media}/10</span>
+      </div>
+      <div style="font-size:.83rem;">${feedbacks.join(' ')}</div>
+      <div style="font-size:.75rem;color:var(--texto2);margin-top:.4rem;">📋 Resposta salva para revisão do gestor.</div>`;
+    document.getElementById('ia-status').style.display = 'none';
+    setTimeout(() => adicionarMensagemSistema(fase.resposta_sistema), 600);
+    setTimeout(() => { document.getElementById('btn-proximo').style.display = 'block'; }, 800);
+  }, 800);
+}
+
+function extrairChaves(prompt) {
+  const chaves = [];
+  const buscar = [
+    'escalar','supervisor','coordenador','jurídico','registr','documentar','print',
+    'intermediar','acionar','briefing','ticket','protocolo','crise','nível',
+    'neutro','condicional','culpa','apurar','empatia','imprensa','procon',
+    'advogado','acusar recebimento','prazo','preservar','evidências'
+  ];
+  buscar.forEach(c => { if (prompt.toLowerCase().includes(c)) chaves.push(c); });
+  return chaves.slice(0, 6);
+}
+
+// ─── REGISTRAR RESULTADO ──────────────────────────────────────────────────
+function registrarResultado(acertou, pontos) {
+  if (acertou) { acertosTotais++; acertosNoCaso++; pontosTotais += pontos; pontosNoCaso += pontos; } else { errosTotais++; }
+  document.getElementById('placar-acertos').textContent = acertosTotais;
+  document.getElementById('placar-erros').textContent = errosTotais;
+  document.getElementById('placar-pontos').textContent = pontosTotais;
+}
+
+// ─── PRÓXIMA FASE ─────────────────────────────────────────────────────────
+function proximaFase() {
+  const caso = CASOS[casoAtual];
+  faseAtual++;
+  if (faseAtual >= caso.fases.length) {
+    resultadosPorCaso.push({ nome: caso.cliente.nome, origem: caso.cliente.origem, acertos: acertosNoCaso, pontos: pontosNoCaso });
+    casoAtual++;
+    if (casoAtual >= CASOS.length) { mostrarResultado(); }
+    else { document.getElementById('btn-proximo').style.display = 'none'; document.getElementById('feedback-box').style.display = 'none'; setTimeout(carregarCaso, 300); }
+    return;
+  }
+  document.getElementById('btn-proximo').style.display = 'none';
+  document.getElementById('feedback-box').style.display = 'none';
+  setTimeout(() => { adicionarMensagemFranqueado(caso.fases[faseAtual].mensagem); setTimeout(() => carregarFase(), 600); }, 300);
+}
+
+// ─── CHAT HELPERS ─────────────────────────────────────────────────────────
+function adicionarMensagemFranqueado(texto) {
+  const caso = CASOS[casoAtual];
+  const chat = document.getElementById('chat-mensagens');
+  const el = document.createElement('div');
+  el.className = 'msg franqueado';
+  el.innerHTML = `<div class="msg-avatar">${caso.cliente.avatar}</div><div><div class="msg-balao">${texto}</div><div class="msg-hora">${horaAtual()}</div></div>`;
+  chat.appendChild(el);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function adicionarMensagemSistema(texto) {
+  const chat = document.getElementById('chat-mensagens');
+  const digitando = document.createElement('div');
+  digitando.className = 'msg sistema'; digitando.id = 'digitando';
+  digitando.innerHTML = `<div class="msg-avatar" style="background:var(--verde);">S</div><div class="msg-balao"><div class="digitando"><span></span><span></span><span></span></div></div>`;
+  chat.appendChild(digitando); chat.scrollTop = chat.scrollHeight;
+  setTimeout(() => {
+    const d = document.getElementById('digitando'); if (d) d.remove();
+    const el = document.createElement('div'); el.className = 'msg sistema';
+    el.innerHTML = `<div class="msg-avatar" style="background:var(--verde);">S</div><div><div class="msg-balao">${texto}</div><div class="msg-hora" style="text-align:right">${horaAtual()}</div></div>`;
+    chat.appendChild(el); chat.scrollTop = chat.scrollHeight;
+  }, 1200);
+}
+
+function horaAtual() {
+  const now = new Date();
+  return `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+}
+
+// ─── RESULTADO FINAL ──────────────────────────────────────────────────────
+function mostrarResultado() {
+  document.getElementById('tela-simulador').style.display = 'none';
+  document.getElementById('tela-resultado').style.display = 'block';
+  const totalPossivel = TOTAL_CASOS * 30;
+  const pct = Math.round((pontosTotais / totalPossivel) * 100);
+  document.getElementById('res-nota').textContent = `${pontosTotais}/${totalPossivel}`;
+  document.getElementById('res-acertos').textContent = acertosTotais;
+  document.getElementById('res-erros').textContent = errosTotais;
+  document.getElementById('res-pontos').textContent = `${pct}%`;
+  let cls, icone, titulo, sub, msg;
+  if (pct >= 70) {
+    cls='aprovado'; icone='🎯'; titulo='Simulação Aprovada!'; sub='Desempenho registrado. Encaminhe para revisão do gestor.';
+    msg=`<strong>${nomeColaborador}</strong>, você demonstrou domínio nos protocolos de SAC, Reclame Aqui e gestão de crises. Suas decisões estão alinhadas com os processos da rede. O gestor vai revisar as fases de escrita e definir os próximos passos. Bem-vindo(a) à equipe!`;
+  } else if (pct >= 50) {
+    cls='medio'; icone='📋'; titulo='Resultado Regular'; sub='Ainda há pontos para reforçar antes de atender clientes.';
+    msg=`<strong>${nomeColaborador}</strong>, você passou pela simulação, mas há decisões que precisam ser revisadas — especialmente triagem de risco e escalada. O gestor vai indicar os módulos para reler antes de uma nova tentativa.`;
+  } else {
+    cls='reprovado'; icone='📚'; titulo='Precisa Reforçar'; sub='Releia os manuais e refaça o simulador.';
+    msg=`<strong>${nomeColaborador}</strong>, o resultado indica que alguns protocolos precisam ser consolidados antes de avançar. O gestor vai identificar os módulos prioritários. Refaça após o reforço!`;
+  }
+  document.getElementById('res-icone').textContent = icone;
+  document.getElementById('res-titulo').textContent = titulo;
+  document.getElementById('res-sub').textContent = sub;
+  document.getElementById('res-nota').className = `nota-grande ${cls}`;
+  document.getElementById('res-pill').textContent = cls==='aprovado' ? '✓ Aprovado(a)' : cls==='medio' ? '⚠ Regular' : '✗ Reforço necessário';
+  document.getElementById('res-pill').className = cls;
+  document.getElementById('msg-gestor').innerHTML = msg;
+  const lista = document.getElementById('breakdown-lista');
+  lista.innerHTML = '';
+  resultadosPorCaso.forEach((r, i) => {
+    const linha = document.createElement('div'); linha.className = 'caso-linha';
+    const stars = [0,1,2].map(j => `<div class="star ${j < r.acertos ? 'cheia' : 'vazia'}"></div>`).join('');
+    linha.innerHTML = `<div class="caso-nome">Caso ${i+1} — ${r.nome.split(' ').slice(0,2).join(' ')}</div><div class="caso-stars">${stars}</div><div class="pontos-caso">${r.pontos}/30</div>`;
+    lista.appendChild(linha);
+  });
+  try {
+    const chave = 'cresci_simulador_sac_resultados';
+    const ex = JSON.parse(localStorage.getItem(chave) || '[]');
+    ex.push({ nome: nomeColaborador, data: new Date().toISOString(), pontos: pontosTotais, total_possivel: totalPossivel, acertos: acertosTotais, erros: errosTotais, percentual: pct, por_caso: resultadosPorCaso, respostas_escritas: respostasEscrita });
+    localStorage.setItem(chave, JSON.stringify(ex));
+  } catch(e) {}
+}
+</script>
+</body>
+</html>
